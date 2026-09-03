@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST() {
@@ -40,15 +40,94 @@ export async function POST() {
       );
     }
 
+    const baseUrl = evolutionUrl.replace(/\/$/, '');
     const instanceName = `wacrm-${profile.account_id}`;
 
-    const response = await fetch(
-      `${evolutionUrl.replace(/\/$/, '')}/instance/create`,
+    const headers = {
+      apikey: evolutionKey,
+    };
+
+    // 1. Procurar uma instância que já existe
+    const instancesResponse = await fetch(
+      `${baseUrl}/instance/fetchInstances`,
+      {
+        method: 'GET',
+        headers,
+        cache: 'no-store',
+      }
+    );
+
+    const instances = await instancesResponse.json();
+
+    if (!instancesResponse.ok) {
+      return NextResponse.json(
+        {
+          error: 'Não foi possível consultar as instâncias da Evolution API.',
+          details: instances,
+        },
+        { status: instancesResponse.status }
+      );
+    }
+
+    const existingInstance = Array.isArray(instances)
+      ? instances.find((item: any) => item?.name === instanceName)
+      : null;
+
+    // 2. Se já existe e está conectada, não criar outra
+    if (existingInstance?.connectionStatus === 'open') {
+      return NextResponse.json({
+        success: true,
+        instanceName,
+        status: 'open',
+        qrcode: null,
+      });
+    }
+
+    // 3. Se já existe, pedir um novo QR Code para essa instância
+    if (existingInstance) {
+      const connectResponse = await fetch(
+        `${baseUrl}/instance/connect/${encodeURIComponent(instanceName)}`,
+        {
+          method: 'GET',
+          headers,
+          cache: 'no-store',
+        }
+      );
+
+      const connectData = await connectResponse.json();
+
+      if (!connectResponse.ok) {
+        return NextResponse.json(
+          {
+            error:
+              connectData?.message ||
+              'Não foi possível reconectar a instância existente.',
+            details: connectData,
+          },
+          { status: connectResponse.status }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        instanceName,
+        status: existingInstance.connectionStatus || 'connecting',
+        qrcode: connectData?.base64 || connectData?.qrcode?.base64 || null,
+        pairingCode:
+          connectData?.pairingCode ||
+          connectData?.qrcode?.pairingCode ||
+          null,
+      });
+    }
+
+    // 4. Se não existe, criar uma nova instância
+    const createResponse = await fetch(
+      `${baseUrl}/instance/create`,
       {
         method: 'POST',
         headers: {
+          ...headers,
           'Content-Type': 'application/json',
-          apikey: evolutionKey,
         },
         body: JSON.stringify({
           instanceName,
@@ -59,30 +138,32 @@ export async function POST() {
       }
     );
 
-    const data = await response.json();
+    const createData = await createResponse.json();
 
-    if (!response.ok) {
+    if (!createResponse.ok) {
       return NextResponse.json(
         {
-          error: data?.message || 'Não foi possível criar a conexão WhatsApp.',
-          details: data,
+          error:
+            createData?.message ||
+            'Não foi possível criar a conexão WhatsApp.',
+          details: createData,
         },
-        { status: response.status }
+        { status: createResponse.status }
       );
     }
 
     return NextResponse.json({
       success: true,
       instanceName,
-      status: data?.instance?.status || 'connecting',
-      qrcode: data?.qrcode?.base64 || null,
-      pairingCode: data?.qrcode?.pairingCode || null,
+      status: createData?.instance?.status || 'connecting',
+      qrcode: createData?.qrcode?.base64 || null,
+      pairingCode: createData?.qrcode?.pairingCode || null,
     });
   } catch (error) {
     console.error('[Evolution Connect]', error);
 
     return NextResponse.json(
-      { error: 'Erro interno ao conectar com a Evolution API.' },
+      { error: 'Erro interno ao conectar o WhatsApp pela Evolution API.' },
       { status: 500 }
     );
   }
