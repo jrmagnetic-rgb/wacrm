@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
@@ -59,7 +59,7 @@ export function SettingsOverview({
     const userId = user.id;
     const acctId = accountId;
 
-    // Cheap counts — resolve fast, render immediately.
+    // Cheap counts â€” resolve fast, render immediately.
     (async () => {
       setCountsLoading(true);
       const [membersRes, invitesRes, templatesTotal, templatesPending, tagsRes, fieldsRes] =
@@ -115,25 +115,36 @@ export function SettingsOverview({
           fieldsRes.status === 'fulfilled' ? fieldsRes.value.count ?? null : null,
       });
       setCountsLoading(false);
-    })();
-
-    // WhatsApp connection status — slower, independent.
+    })();    
+    // WhatsApp connection status — use Evolution API.
     (async () => {
       setWhatsappLoading(true);
-      const [row, health] = await Promise.allSettled([
-        supabase
-          .from('whatsapp_config')
-          .select('phone_number_id')
-          .eq('account_id', acctId)
-          .maybeSingle(),
-        fetch('/api/whatsapp/config', { cache: 'no-store' }).then((r) => r.json()),
-      ]);
-      if (cancelled) return;
-      setWhatsapp({
-        configured: row.status === 'fulfilled' && !!row.value.data?.phone_number_id,
-        connected: health.status === 'fulfilled' && !!health.value?.connected,
-      });
-      setWhatsappLoading(false);
+
+      try {
+        const response = await fetch('/api/evolution/status', {
+          cache: 'no-store',
+        });
+
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        setWhatsapp({
+          configured: response.ok && data?.status !== 'not_found',
+          connected: response.ok && data?.connected === true,
+        });
+      } catch {
+        if (cancelled) return;
+
+        setWhatsapp({
+          configured: false,
+          connected: false,
+        });
+      } finally {
+        if (!cancelled) {
+          setWhatsappLoading(false);
+        }
+      }
     })();
 
     return () => {
@@ -181,7 +192,7 @@ export function SettingsOverview({
           ? t('viewTeamMembers')
           : `${t('membersCount', { count: counts.members })}${
               counts.pendingInvites
-                ? ` · ${t('pendingInvites', { count: counts.pendingInvites })}`
+                ? ` Â· ${t('pendingInvites', { count: counts.pendingInvites })}`
                 : ''
             }`,
     },
@@ -193,14 +204,14 @@ export function SettingsOverview({
           ? t('manageTemplates')
           : `${t('templatesCount', { count: counts.templates })}${
               counts.templatesPending
-                ? ` · ${t('pendingReview', { count: counts.templatesPending })}`
+                ? ` Â· ${t('pendingReview', { count: counts.templatesPending })}`
                 : ''
             }`,
     },
     {
       section: 'deals',
       loading: false,
-      subtitle: `${defaultCurrency} — ${currencyLabel}`,
+      subtitle: `${defaultCurrency} â€” ${currencyLabel}`,
     },
     {
       section: 'fields',
@@ -208,7 +219,7 @@ export function SettingsOverview({
       subtitle:
         counts?.tags == null && counts?.customFields == null
           ? t('tagsAndFields')
-          : `${t('tagsCount', { count: counts?.tags ?? 0 })} · ${t('fieldsCount', {
+          : `${t('tagsCount', { count: counts?.tags ?? 0 })} Â· ${t('fieldsCount', {
               count: counts?.customFields ?? 0,
             })}`,
     },
@@ -289,3 +300,4 @@ export function SettingsOverview({
     </section>
   );
 }
+
