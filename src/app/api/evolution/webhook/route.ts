@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     console.error('[Evolution Webhook] Erro:', error)
 
     return NextResponse.json(
-      { received: false, error: 'Payload inv�lido' },
+      { received: false, error: 'Payload inválido' },
       { status: 400 }
     )
   }
