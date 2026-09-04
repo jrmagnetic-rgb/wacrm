@@ -149,6 +149,7 @@ export async function POST(request: Request) {
         .select('*')
         .eq('account_id', accountId)
         .eq('contact_id', contact.id)
+        .eq('channel', 'whatsapp')
         .order('created_at', { ascending: true })
         .limit(1)
 
@@ -173,6 +174,7 @@ export async function POST(request: Request) {
             account_id: accountId,
             user_id: configOwnerUserId,
             contact_id: contact.id,
+            channel: 'whatsapp',
           })
           .select()
           .single()
@@ -184,6 +186,7 @@ export async function POST(request: Request) {
             .select('*')
             .eq('account_id', accountId)
             .eq('contact_id', contact.id)
+            .eq('channel', 'whatsapp')
             .order('created_at', { ascending: true })
             .limit(1)
 
@@ -279,4 +282,8 @@ export async function POST(request: Request) {
     )
   }
 }
+
+
+
+
 

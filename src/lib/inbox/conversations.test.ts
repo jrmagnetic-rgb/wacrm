@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
-import {
+﻿import {
   matchesContactFilters,
   normalizeConversation,
 } from "./conversations";
 import type { Conversation } from "@/types";
+import { describe, expect, it } from "vitest";
 
 function makeConversation(
   contact: Partial<Conversation["contact"]> | null,
@@ -12,6 +12,7 @@ function makeConversation(
     id: "c1",
     user_id: "u1",
     contact_id: "ct1",
+    channel: "whatsapp",
     status: "open",
     unread_count: 0,
     created_at: "",
@@ -106,6 +107,7 @@ describe("normalizeConversation", () => {
       id: "c1",
       user_id: "u1",
       contact_id: "ct1",
+      channel: "whatsapp" as const,
       status: "open" as const,
       unread_count: 0,
       created_at: "",
@@ -133,6 +135,7 @@ describe("normalizeConversation", () => {
       id: "c1",
       user_id: "u1",
       contact_id: "ct1",
+      channel: "whatsapp" as const,
       status: "open" as const,
       unread_count: 0,
       created_at: "",
@@ -143,3 +146,6 @@ describe("normalizeConversation", () => {
     expect(normalizeConversation(raw).contact).toBeNull();
   });
 });
+
+
+

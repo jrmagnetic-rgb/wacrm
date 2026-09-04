@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireRole, toErrorResponse } from '@/lib/auth/account'
 import {
@@ -13,10 +13,10 @@ import {
 } from '@/lib/whatsapp/send-message'
 
 // The dashboard's outbound-send endpoint. It owns auth, per-user rate
-// limiting, and the two ways the UI targets a thread — an existing
-// `conversation_id` (inbox) or a `contact_id` (Contact detail →
+// limiting, and the two ways the UI targets a thread â€” an existing
+// `conversation_id` (inbox) or a `contact_id` (Contact detail â†’
 // find-or-create the conversation). The actual Meta plumbing (validate
-// → send → persist → pause flows) lives in the shared
+// â†’ send â†’ persist â†’ pause flows) lives in the shared
 // `sendMessageToConversation` core, which the public `/api/v1/messages`
 // endpoint reuses. This route is a thin adapter: resolve the
 // conversation, delegate, then map `SendMessageError` back onto the
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     // Requires the 'agent' role, matching both `canSendMessages` and the
     // `messages_modify` RLS policy (migration 017).
     //
-    // Resolving `account_id` off the profile — which any 'viewer' has —
+    // Resolving `account_id` off the profile â€” which any 'viewer' has â€”
     // was previously the only gate. RLS did block the message INSERT, but
     // the send core calls Meta BEFORE it persists, so a viewer's request
     // still delivered a real WhatsApp message to the customer and merely
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const {
       // `conversation_id` targets an existing thread (inbox). `contact_id`
       // lets a caller initiate from a contact that may have no conversation
-      // yet (Contact detail → Send template) — we find-or-create one below.
+      // yet (Contact detail â†’ Send template) â€” we find-or-create one below.
       conversation_id: conversationIdInput,
       contact_id,
       message_type,
@@ -70,8 +70,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // Validate the message shape up front — before the contact_id path
-    // finds-or-creates a conversation — so an invalid payload 400s
+    // Validate the message shape up front â€” before the contact_id path
+    // finds-or-creates a conversation â€” so an invalid payload 400s
     // without leaving an orphan empty conversation behind.
     try {
       validateSendMessageParams({
@@ -100,6 +100,7 @@ export async function POST(request: Request) {
         .select('id')
         .eq('id', conversationIdInput)
         .eq('account_id', accountId)
+        .eq('channel', 'whatsapp')
         .single()
 
       if (convError || !data) {
@@ -195,7 +196,7 @@ type SendSupabase = Awaited<ReturnType<typeof createClient>>
  * Return the contact's conversation id in this account, creating one if
  * it doesn't exist yet. Mirrors the webhook's find-or-create so an
  * inbound-then-outbound (or outbound-first) sequence converges on a single
- * thread per contact. Runs under the caller's RLS — the conversations_insert
+ * thread per contact. Runs under the caller's RLS â€” the conversations_insert
  * policy requires account agent membership, which the caller already is.
  */
 async function findOrCreateConversation(
@@ -230,3 +231,4 @@ async function findOrCreateConversation(
 
   return created.id
 }
+
