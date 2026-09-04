@@ -1,5 +1,5 @@
-// ============================================================
-// Outbound message send — the core that both the dashboard's
+﻿// ============================================================
+// Outbound message send â€” the core that both the dashboard's
 // `/api/whatsapp/send` route and the public `/api/v1/messages`
 // endpoint call.
 //
@@ -14,7 +14,7 @@
 // `accountId` and throws `SendMessageError` on failure. The callers
 // own auth, rate-limiting, body parsing, and mapping the error to
 // their respective response shapes (internal `{ error }` vs the v1
-// envelope). Behaviour is identical to the original inline route —
+// envelope). Behaviour is identical to the original inline route â€”
 // this is a straight extraction so the public endpoint can reuse it
 // without duplicating ~250 lines of Meta plumbing.
 // ============================================================
@@ -35,6 +35,7 @@ import {
   type InteractiveMessagePayload,
 } from '@/lib/whatsapp/interactive';
 import { decrypt, encrypt, isLegacyFormat } from '@/lib/whatsapp/encryption';
+import { sendEvolutionTextMessage } from '@/lib/whatsapp/evolution-api';
 import { supabaseAdmin } from '@/lib/flows/admin-client';
 import {
   sanitizePhoneForMeta,
@@ -101,14 +102,14 @@ export interface SendMessageResult {
  * Send a message in an existing conversation and persist it.
  *
  * `db` may be an RLS-scoped user client (dashboard) or the service-
- * role client (public API) — every query is filtered by `accountId`
+ * role client (public API) â€” every query is filtered by `accountId`
  * either way, so tenancy holds regardless of which client is passed.
  */
 /**
  * Validate the message-shape params (type, required content, caption
  * cap) independently of any DB state, throwing `SendMessageError` on a
  * bad payload. Exported so a caller can reject a malformed request
- * *before* it finds-or-creates a contact/conversation — otherwise an
+ * *before* it finds-or-creates a contact/conversation â€” otherwise an
  * invalid payload leaves an orphan empty conversation behind. The send
  * core calls this too, so validation can't be skipped.
  */
@@ -251,41 +252,50 @@ export async function sendMessageToConversation(
     );
   }
 
-  // WhatsApp config, account-scoped.
-  const { data: config, error: configError } = await db
-    .from('whatsapp_config')
-    .select('*')
-    .eq('account_id', accountId)
-    .single();
+  // WhatsApp transport.
+  // Text messages use Evolution API.
+  // Other message types still use the legacy Meta transport until migrated.
+  let config: any = null;
+  let accessToken = '';
+  const evolutionInstanceName = `wacrm-${accountId}`;
 
-  if (configError || !config) {
-    throw new SendMessageError(
-      'whatsapp_not_configured',
-      'WhatsApp not configured. Please set up your WhatsApp integration first.',
-      400
-    );
-  }
-
-  const accessToken = decrypt(config.access_token);
-
-  // Self-heal legacy CBC ciphertexts. Fire-and-forget; idempotent.
-  if (isLegacyFormat(config.access_token)) {
-    void db
+  if (messageType !== 'text') {
+    const { data: metaConfig, error: configError } = await db
       .from('whatsapp_config')
-      .update({ access_token: encrypt(accessToken) })
-      .eq('id', config.id)
-      .then(({ error }: { error: { message: string } | null }) => {
-        if (error) {
-          console.warn(
-            '[send-message] access_token GCM upgrade failed:',
-            error.message
-          );
-        }
-      });
+      .select('*')
+      .eq('account_id', accountId)
+      .single();
+
+    if (configError || !metaConfig) {
+      throw new SendMessageError(
+        'whatsapp_not_configured',
+        'WhatsApp not configured. Please set up your WhatsApp integration first.',
+        400
+      );
+    }
+
+    config = metaConfig;
+    accessToken = decrypt(config.access_token);
+
+    // Self-heal legacy CBC ciphertexts. Fire-and-forget; idempotent.
+    if (isLegacyFormat(config.access_token)) {
+      void db
+        .from('whatsapp_config')
+        .update({ access_token: encrypt(accessToken) })
+        .eq('id', config.id)
+        .then(({ error }: { error: { message: string } | null }) => {
+          if (error) {
+            console.warn(
+              '[send-message] access_token GCM upgrade failed:',
+              error.message
+            );
+          }
+        });
+    }
   }
 
-  // Resolve the reply target to its Meta message_id. The parent must
-  // belong to this same conversation — otherwise a caller could quote
+  // Resolve the reply target to its message_id. The parent must
+  // belong to this same conversation â€” otherwise a caller could quote
   // messages they can't see by guessing UUIDs.
   let contextMessageId: string | undefined;
   if (replyToMessageId) {
@@ -312,7 +322,7 @@ export async function sendMessageToConversation(
     }
   }
 
-  // Template row — needed for the send-builder's header + button
+  // Template row â€” needed for the send-builder's header + button
   // components AND for the body we persist. The lookup tolerates the
   // en / en_US split so a caller that omits the language still resolves
   // a row (see resolveTemplateRow).
@@ -328,7 +338,7 @@ export async function sendMessageToConversation(
     if (resolved.malformed) {
       throw new SendMessageError(
         'template_malformed',
-        'Template row is malformed locally — run "Sync from Meta" in Settings to repair it.',
+        'Template row is malformed locally â€” run "Sync from Meta" in Settings to repair it.',
         500
       );
     }
@@ -337,6 +347,15 @@ export async function sendMessageToConversation(
   }
 
   const attempt = async (phone: string): Promise<string> => {
+    if (messageType === 'text') {
+      const result = await sendEvolutionTextMessage({
+        instanceName: evolutionInstanceName,
+        to: phone,
+        text: contentText!,
+      })
+      return result.messageId
+    }
+
     if (messageType === 'template') {
       const result = await sendTemplateMessage({
         phoneNumberId: config.phone_number_id,
@@ -402,7 +421,7 @@ export async function sendMessageToConversation(
     return result.messageId;
   };
 
-  // Send via Meta — retry across phone-number variants if Meta rejects
+  // Send via Meta â€” retry across phone-number variants if Meta rejects
   // with "recipient not in allowed list"; persist a working variant
   // back to the contact so the next send goes straight through.
   let waMessageId = '';
@@ -424,7 +443,7 @@ export async function sendMessageToConversation(
         }
         lastError = err;
         console.warn(
-          `[send-message] variant "${variant}" rejected by Meta, trying next…`
+          `[send-message] variant "${variant}" rejected by Meta, trying nextâ€¦`
         );
       }
     }
@@ -439,7 +458,7 @@ export async function sendMessageToConversation(
 
   if (workingPhone !== sanitizedPhone) {
     console.log(
-      `[send-message] Auto-corrected contact phone: ${sanitizedPhone} → ${workingPhone}`
+      `[send-message] Auto-corrected contact phone: ${sanitizedPhone} â†’ ${workingPhone}`
     );
     await db
       .from('contacts')
@@ -456,7 +475,7 @@ export async function sendMessageToConversation(
   // Templates persist the *substituted* body. The composer pre-renders
   // and posts it as contentText; every other caller (the public API,
   // most importantly) sends none, and storing null there left the
-  // Inbox rendering an empty bubble — issue #483.
+  // Inbox rendering an empty bubble â€” issue #483.
   const persistedText =
     messageType === 'interactive'
       ? interactivePayload!.body
@@ -509,7 +528,7 @@ export async function sendMessageToConversation(
     })
     .eq('id', conversationId);
 
-  // Pause any active Flow run for this contact — the agent stepping in
+  // Pause any active Flow run for this contact â€” the agent stepping in
   // is the strongest "yield, human is here" signal. Best-effort.
   try {
     const { error: pauseErr } = await supabaseAdmin()
@@ -534,3 +553,6 @@ export async function sendMessageToConversation(
 
   return { messageId: messageRecord.id, whatsappMessageId: waMessageId };
 }
+
+
+
