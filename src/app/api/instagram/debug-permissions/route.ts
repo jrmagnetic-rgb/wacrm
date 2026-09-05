@@ -35,7 +35,9 @@ export async function GET() {
     }
 
     const response = await fetch(
-      'https://graph.instagram.com/v26.0/me/permissions',
+      `https://graph.instagram.com/v26.0/${encodeURIComponent(
+        config.instagram_user_id
+      )}?fields=id,username`,
       {
         headers: {
           Authorization: `Bearer ${config.access_token}`,
