@@ -106,6 +106,8 @@ export async function POST(request: Request) {
          * Diagnóstico da estrutura real enviada pela Meta.
          * Não registra tokens, segredos ou credenciais.
          */
+        console.log('[instagram/webhook] RAW EVENT:', JSON.stringify(event))
+
         console.log('[instagram/webhook] event structure:', {
           entryId: entryId || null,
           keys: Object.keys(event),
