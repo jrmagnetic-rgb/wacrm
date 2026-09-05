@@ -70,7 +70,15 @@ export async function GET(request: Request) {
     const appId = process.env.INSTAGRAM_APP_ID
     const appSecret = process.env.INSTAGRAM_APP_SECRET
     const redirectUri = process.env.INSTAGRAM_REDIRECT_URI
-    
+
+    console.log('[instagram/callback] OAuth code diagnostic:', {
+      hasCode: Boolean(code),
+      codeLength: code?.length || 0,
+      codeStartsWith: code?.slice(0, 10) || '',
+      redirectUri: JSON.stringify(redirectUri),
+      redirectUriLength: redirectUri?.length || 0,
+    })
+
     console.log('[instagram/callback] OAuth config:', {
       appId,
       redirectUri,
@@ -231,4 +239,3 @@ export async function GET(request: Request) {
     )
   }
 }
-
