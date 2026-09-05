@@ -30,7 +30,7 @@ export async function GET() {
     const response = new NextResponse(null, {
       status: 307,
       headers: {
-        Location: `https://www.instagram.com/oauth/authorize?client_id=${encodeURIComponent(
+        Location: `https://www.instagram.com/oauth/authorize?force_reauth=true&client_id=${encodeURIComponent(
           appId
         )}&redirect_uri=${encodeURIComponent(
           redirectUri
@@ -67,3 +67,4 @@ export async function GET() {
     )
   }
 }
+
