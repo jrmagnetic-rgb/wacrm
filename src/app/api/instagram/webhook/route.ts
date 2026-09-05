@@ -30,6 +30,12 @@ interface InstagramMessagingEvent {
   }
   timestamp?: number
   message?: InstagramMessage
+  read?: unknown
+  delivery?: unknown
+  postback?: unknown
+  reaction?: unknown
+  message_edit?: unknown
+  referral?: unknown
 }
 
 interface InstagramWebhookEntry {
@@ -74,7 +80,10 @@ export async function POST(request: Request) {
     })
 
     if (body.object !== 'instagram') {
-      console.warn('[instagram/webhook] invalid object:', body.object)
+      console.warn(
+        '[instagram/webhook] invalid object:',
+        body.object
+      )
 
       return NextResponse.json(
         { received: false },
@@ -93,22 +102,57 @@ export async function POST(request: Request) {
       })
 
       for (const event of entry.messaging || []) {
+        /*
+         * Diagnóstico da estrutura real enviada pela Meta.
+         * Não registra tokens, segredos ou credenciais.
+         */
+        console.log('[instagram/webhook] event structure:', {
+          entryId: entryId || null,
+          keys: Object.keys(event),
+          senderId: event.sender?.id || null,
+          recipientId: event.recipient?.id || null,
+          message: event.message || null,
+          read: event.read || null,
+          delivery: event.delivery || null,
+          postback: event.postback || null,
+          reaction: event.reaction || null,
+          messageEdit: event.message_edit || null,
+          referral: event.referral || null,
+        })
+
         const senderId = event.sender?.id
         const recipientId = event.recipient?.id
         const message = event.message
 
-        console.log('[instagram/webhook] event:', {
-          entryId: entryId || 'no-entry-id',
-          senderId: senderId || 'no-sender-id',
-          recipientId: recipientId || 'no-recipient-id',
-          hasMessage: Boolean(message),
-          hasText: Boolean(message?.text),
-          messageId: message?.mid || 'no-mid',
-        })
+        /*
+         * Eventos como read, delivery, reaction etc.
+         * não são mensagens recebidas.
+         *
+         * Eles são reconhecidos e ignorados normalmente.
+         */
+        if (!senderId || !recipientId || !message) {
+          console.log(
+            '[instagram/webhook] non-message event ignored:',
+            {
+              entryId: entryId || null,
+              eventKeys: Object.keys(event),
+            }
+          )
 
-        if (!senderId || !recipientId || !message?.text) {
-          console.warn(
-            '[instagram/webhook] event ignored: missing sender, recipient or text'
+          continue
+        }
+
+        /*
+         * Neste momento processamos mensagens de texto.
+         */
+        if (!message.text) {
+          console.log(
+            '[instagram/webhook] non-text message ignored:',
+            {
+              messageId: message.mid || 'no-mid',
+              senderId,
+              recipientId,
+            }
           )
 
           continue
@@ -118,26 +162,33 @@ export async function POST(request: Request) {
 
         if (!contentText) {
           console.warn(
-            '[instagram/webhook] event ignored: empty text'
+            '[instagram/webhook] empty text ignored'
           )
 
           continue
         }
 
         /*
-         * A Meta pode entregar o ID da conta receptora em recipient.id
-         * e também em entry.id.
+         * A conta que recebeu a mensagem pode ser identificada
+         * por recipient.id ou pelo entry.id.
          *
-         * Tentamos primeiro recipient.id e depois entry.id.
+         * Tentamos os dois identificadores.
          */
         let config = null
 
-        const { data: configByRecipient, error: recipientConfigError } =
-          await admin
-            .from('instagram_config')
-            .select('user_id, instagram_user_id, status')
-            .eq('instagram_user_id', recipientId)
-            .maybeSingle()
+        const {
+          data: configByRecipient,
+          error: recipientConfigError,
+        } = await admin
+          .from('instagram_config')
+          .select(
+            'user_id, instagram_user_id, status'
+          )
+          .eq(
+            'instagram_user_id',
+            recipientId
+          )
+          .maybeSingle()
 
         if (recipientConfigError) {
           console.error(
@@ -149,12 +200,19 @@ export async function POST(request: Request) {
         }
 
         if (!config && entryId && entryId !== recipientId) {
-          const { data: configByEntry, error: entryConfigError } =
-            await admin
-              .from('instagram_config')
-              .select('user_id, instagram_user_id, status')
-              .eq('instagram_user_id', entryId)
-              .maybeSingle()
+          const {
+            data: configByEntry,
+            error: entryConfigError,
+          } = await admin
+            .from('instagram_config')
+            .select(
+              'user_id, instagram_user_id, status'
+            )
+            .eq(
+              'instagram_user_id',
+              entryId
+            )
+            .maybeSingle()
 
           if (entryConfigError) {
             console.error(
@@ -166,20 +224,22 @@ export async function POST(request: Request) {
           }
         }
 
-        /*
-         * Diagnóstico seguro:
-         * nunca registramos token ou segredo.
-         */
-        console.log('[instagram/webhook] config resolution:', {
-          recipientId,
-          entryId: entryId || null,
-          configuredInstagramUserId:
-            config?.instagram_user_id || null,
-          found: Boolean(config),
-          status: config?.status || null,
-        })
+        console.log(
+          '[instagram/webhook] config resolution:',
+          {
+            recipientId,
+            entryId: entryId || null,
+            configuredInstagramUserId:
+              config?.instagram_user_id || null,
+            found: Boolean(config),
+            status: config?.status || null,
+          }
+        )
 
-        if (!config || config.status !== 'connected') {
+        if (
+          !config ||
+          config.status !== 'connected'
+        ) {
           console.warn(
             '[instagram/webhook] no connected config for incoming account:',
             {
@@ -191,13 +251,25 @@ export async function POST(request: Request) {
           continue
         }
 
-        const { data: profile, error: profileError } = await admin
+        /*
+         * Descobre a conta do WACRM responsável pelo Instagram.
+         */
+        const {
+          data: profile,
+          error: profileError,
+        } = await admin
           .from('profiles')
           .select('account_id')
-          .eq('user_id', config.user_id)
+          .eq(
+            'user_id',
+            config.user_id
+          )
           .maybeSingle()
 
-        if (profileError || !profile?.account_id) {
+        if (
+          profileError ||
+          !profile?.account_id
+        ) {
           console.error(
             '[instagram/webhook] account lookup failed:',
             profileError
@@ -209,15 +281,24 @@ export async function POST(request: Request) {
         const accountId = profile.account_id
 
         /*
-         * Localiza o contato pelo ID do usuário que enviou a mensagem.
+         * Localiza o contato pelo ID do usuário
+         * que enviou a mensagem no Instagram.
          */
-        const { data: instagramContact, error: contactLookupError } =
-          await admin
-            .from('contacts')
-            .select('*')
-            .eq('account_id', accountId)
-            .eq('instagram_user_id', senderId)
-            .maybeSingle()
+        const {
+          data: instagramContact,
+          error: contactLookupError,
+        } = await admin
+          .from('contacts')
+          .select('*')
+          .eq(
+            'account_id',
+            accountId
+          )
+          .eq(
+            'instagram_user_id',
+            senderId
+          )
+          .maybeSingle()
 
         if (contactLookupError) {
           console.error(
@@ -231,10 +312,13 @@ export async function POST(request: Request) {
         let contact = instagramContact
 
         /*
-         * Cria o contato caso ainda não exista.
+         * Cria o contato caso seja a primeira mensagem.
          */
         if (!contact) {
-          const { data: newContact, error: contactError } = await admin
+          const {
+            data: newContact,
+            error: contactError,
+          } = await admin
             .from('contacts')
             .insert({
               account_id: accountId,
@@ -246,20 +330,34 @@ export async function POST(request: Request) {
             .select('*')
             .single()
 
-          if (!contactError && newContact) {
+          if (
+            !contactError &&
+            newContact
+          ) {
             contact = newContact
-          } else if (contactError && isUniqueViolation(contactError)) {
+          } else if (
+            contactError &&
+            isUniqueViolation(contactError)
+          ) {
             /*
-             * Outra requisição pode ter criado o mesmo contato
-             * simultaneamente. Recuperamos o registro existente.
+             * Outra requisição pode ter criado o contato
+             * simultaneamente.
              */
-            const { data: racedContact, error: racedContactError } =
-              await admin
-                .from('contacts')
-                .select('*')
-                .eq('account_id', accountId)
-                .eq('instagram_user_id', senderId)
-                .maybeSingle()
+            const {
+              data: racedContact,
+              error: racedContactError,
+            } = await admin
+              .from('contacts')
+              .select('*')
+              .eq(
+                'account_id',
+                accountId
+              )
+              .eq(
+                'instagram_user_id',
+                senderId
+              )
+              .maybeSingle()
 
             if (racedContactError) {
               console.error(
@@ -290,7 +388,7 @@ export async function POST(request: Request) {
         }
 
         /*
-         * Localiza a conversa do Instagram.
+         * Procura uma conversa existente do Instagram.
          */
         const {
           data: existingConversation,
@@ -298,9 +396,18 @@ export async function POST(request: Request) {
         } = await admin
           .from('conversations')
           .select('*')
-          .eq('account_id', accountId)
-          .eq('contact_id', contact.id)
-          .eq('channel', 'instagram')
+          .eq(
+            'account_id',
+            accountId
+          )
+          .eq(
+            'contact_id',
+            contact.id
+          )
+          .eq(
+            'channel',
+            'instagram'
+          )
           .maybeSingle()
 
         if (conversationLookupError) {
@@ -312,10 +419,11 @@ export async function POST(request: Request) {
           continue
         }
 
-        let conversationId = existingConversation?.id
+        let conversationId =
+          existingConversation?.id
 
         /*
-         * Cria a conversa se não existir.
+         * Cria a conversa se ainda não existir.
          */
         if (!conversationId) {
           const {
@@ -332,24 +440,41 @@ export async function POST(request: Request) {
             .select('*')
             .single()
 
-          if (!conversationError && newConversation) {
-            conversationId = newConversation.id
+          if (
+            !conversationError &&
+            newConversation
+          ) {
+            conversationId =
+              newConversation.id
           } else if (
             conversationError &&
-            isUniqueViolation(conversationError)
+            isUniqueViolation(
+              conversationError
+            )
           ) {
             /*
-             * Outra requisição pode ter criado a conversa
-             * simultaneamente.
+             * Outra requisição pode ter criado
+             * a conversa simultaneamente.
              */
-            const { data: racedConversation, error: racedError } =
-              await admin
-                .from('conversations')
-                .select('*')
-                .eq('account_id', accountId)
-                .eq('contact_id', contact.id)
-                .eq('channel', 'instagram')
-                .maybeSingle()
+            const {
+              data: racedConversation,
+              error: racedError,
+            } = await admin
+              .from('conversations')
+              .select('*')
+              .eq(
+                'account_id',
+                accountId
+              )
+              .eq(
+                'contact_id',
+                contact.id
+              )
+              .eq(
+                'channel',
+                'instagram'
+              )
+              .maybeSingle()
 
             if (racedError) {
               console.error(
@@ -360,7 +485,8 @@ export async function POST(request: Request) {
               continue
             }
 
-            conversationId = racedConversation?.id
+            conversationId =
+              racedConversation?.id
           } else {
             console.error(
               '[instagram/webhook] conversation creation failed:',
@@ -380,25 +506,32 @@ export async function POST(request: Request) {
         }
 
         /*
-         * Salva a mensagem.
-         *
-         * O message_id da Meta é usado para impedir duplicidade
-         * quando o mesmo webhook for entregue novamente.
+         * Salva a mensagem recebida.
          */
-        const { error: messageError } = await admin
+        const {
+          error: messageError,
+        } = await admin
           .from('messages')
           .upsert(
             {
-              conversation_id: conversationId,
-              sender_type: 'customer',
-              content_type: 'text',
-              content: contentText,
-              message_id: message.mid || null,
-              status: 'delivered',
+              conversation_id:
+                conversationId,
+              sender_type:
+                'customer',
+              content_type:
+                'text',
+              content:
+                contentText,
+              message_id:
+                message.mid || null,
+              status:
+                'delivered',
             },
             {
-              onConflict: 'message_id',
-              ignoreDuplicates: true,
+              onConflict:
+                'message_id',
+              ignoreDuplicates:
+                true,
             }
           )
 
@@ -412,15 +545,19 @@ export async function POST(request: Request) {
         }
 
         /*
-         * Reabre a conversa e atualiza a atividade.
+         * Abre/reabre a conversa.
          */
         await admin
           .from('conversations')
           .update({
             status: 'open',
-            updated_at: new Date().toISOString(),
+            updated_at:
+              new Date().toISOString(),
           })
-          .eq('id', conversationId)
+          .eq(
+            'id',
+            conversationId
+          )
 
         await reopenClosedConversation(
           admin,
@@ -430,10 +567,14 @@ export async function POST(request: Request) {
         console.log(
           '[instagram/webhook] message processed successfully:',
           {
-            messageId: message.mid || 'no-mid',
+            messageId:
+              message.mid ||
+              'no-mid',
             senderId,
             recipientId,
-            entryId: entryId || null,
+            entryId:
+              entryId ||
+              null,
             conversationId,
           }
         )
@@ -441,8 +582,12 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { received: true },
-      { status: 200 }
+      {
+        received: true,
+      },
+      {
+        status: 200,
+      }
     )
   } catch (error) {
     console.error(
@@ -452,9 +597,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        error: 'Erro ao processar webhook do Instagram.',
+        error:
+          'Erro ao processar webhook do Instagram.',
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     )
   }
 }
