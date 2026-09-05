@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 export async function GET() {
@@ -31,7 +31,7 @@ export async function GET() {
     }
 
     const url =
-      `https://graph.instagram.com/v26.0/${encodeURIComponent(config.instagram_user_id)}/conversations?platform=instagram`
+      `https://graph.instagram.com/v26.0/me/conversations?platform=instagram`
 
     const response = await fetch(url, {
       headers: {
@@ -67,3 +67,4 @@ export async function GET() {
     )
   }
 }
+
