@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     if (error) {
       return NextResponse.redirect(
         new URL(
-          `/dashboard/settings?instagram_error=${encodeURIComponent(error)}`,
+          `/settings?instagram_error=${encodeURIComponent(error)}`,
           'https://wacrm.delivery73.com'
         )
       )
@@ -78,20 +78,18 @@ export async function GET(request: Request) {
       )
     }
 
+    const tokenForm = new FormData()
+    tokenForm.append('client_id', appId)
+    tokenForm.append('client_secret', appSecret)
+    tokenForm.append('grant_type', 'authorization_code')
+    tokenForm.append('redirect_uri', redirectUri)
+    tokenForm.append('code', code)
+
     const tokenResponse = await fetch(
       'https://api.instagram.com/oauth/access_token',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          client_id: appId,
-          client_secret: appSecret,
-          grant_type: 'authorization_code',
-          redirect_uri: redirectUri,
-          code,
-        }),
+        body: tokenForm,
         cache: 'no-store',
       }
     )
@@ -209,7 +207,7 @@ export async function GET(request: Request) {
 
     const response = NextResponse.redirect(
       new URL(
-        '/dashboard/settings?instagram_connected=1',
+        '/settings?instagram_connected=1',
         'https://wacrm.delivery73.com'
       )
     )
@@ -226,3 +224,4 @@ export async function GET(request: Request) {
     )
   }
 }
+
