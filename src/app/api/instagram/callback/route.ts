@@ -70,6 +70,13 @@ export async function GET(request: Request) {
     const appId = process.env.INSTAGRAM_APP_ID
     const appSecret = process.env.INSTAGRAM_APP_SECRET
     const redirectUri = process.env.INSTAGRAM_REDIRECT_URI
+    
+    console.log('[instagram/callback] OAuth config:', {
+      appId,
+      redirectUri,
+      hasAppSecret: Boolean(appSecret),
+      appSecretLength: appSecret?.length || 0,
+    })
 
     if (!appId || !appSecret || !redirectUri) {
       return NextResponse.json(
