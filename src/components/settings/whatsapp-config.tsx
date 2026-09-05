@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { SettingsPanelHead } from './settings-panel-head';
+import { InstagramConfig } from './instagram-config';
 
 type EvolutionStatus = {
   connected: boolean;
@@ -54,7 +55,7 @@ export function WhatsAppConfig() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Não foi possível consultar o WhatsApp.');
+        throw new Error(data.error || 'NÃ£o foi possÃ­vel consultar o WhatsApp.');
       }
 
       setStatus(data);
@@ -101,7 +102,7 @@ export function WhatsAppConfig() {
 
       if (!response.ok) {
         throw new Error(
-          data.error || 'Não foi possível iniciar a conexão.'
+          data.error || 'NÃ£o foi possÃ­vel iniciar a conexÃ£o.'
         );
       }
 
@@ -120,7 +121,7 @@ export function WhatsAppConfig() {
         if (data.status === 'open') {
           toast.success('WhatsApp conectado!');
         } else {
-          toast.success('Conexão iniciada. Aguarde alguns segundos.');
+          toast.success('ConexÃ£o iniciada. Aguarde alguns segundos.');
         }
       }
     } catch (error) {
@@ -173,13 +174,13 @@ export function WhatsAppConfig() {
               <AlertTitle className="mb-0 text-foreground">
                 {connected
                   ? 'WhatsApp conectado'
-                  : 'WhatsApp não conectado'}
+                  : 'WhatsApp nÃ£o conectado'}
               </AlertTitle>
             </div>
 
             <AlertDescription className="text-muted-foreground">
               {connected
-                ? 'Seu WhatsApp está conectado e pronto para receber e enviar mensagens.'
+                ? 'Seu WhatsApp estÃ¡ conectado e pronto para receber e enviar mensagens.'
                 : 'Conecte seu WhatsApp escaneando o QR Code pelo aplicativo.'}
             </AlertDescription>
           </Alert>
@@ -188,11 +189,11 @@ export function WhatsAppConfig() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Smartphone className="size-5" />
-                Conexão WhatsApp
+                ConexÃ£o WhatsApp
               </CardTitle>
 
               <CardDescription>
-                A conexão é feita diretamente pela Evolution API.
+                A conexÃ£o Ã© feita diretamente pela Evolution API.
               </CardDescription>
             </CardHeader>
 
@@ -206,7 +207,7 @@ export function WhatsAppConfig() {
                   </h3>
 
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Sua conexão está ativa.
+                    Sua conexÃ£o estÃ¡ ativa.
                   </p>
 
                   <Button
@@ -238,7 +239,7 @@ export function WhatsAppConfig() {
                         Abra o WhatsApp no celular, acesse
                         <br />
                         <strong>Aparelhos conectados</strong> e escaneie este
-                        código.
+                        cÃ³digo.
                       </p>
 
                       <div className="rounded-xl border bg-white p-3">
@@ -251,7 +252,7 @@ export function WhatsAppConfig() {
 
                       <div className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
                         <Loader2 className="size-4 animate-spin" />
-                        Aguardando conexão...
+                        Aguardando conexÃ£o...
                       </div>
 
                       <Button
@@ -273,7 +274,7 @@ export function WhatsAppConfig() {
                       </h3>
 
                       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                        Clique no botão abaixo para gerar um QR Code e
+                        Clique no botÃ£o abaixo para gerar um QR Code e
                         conectar seu WhatsApp.
                       </p>
 
@@ -354,6 +355,11 @@ export function WhatsAppConfig() {
           </CardContent>
         </Card>
       </div>
+
+      <div className="mt-6">
+        <InstagramConfig />
+      </div>
     </section>
   );
 }
+
