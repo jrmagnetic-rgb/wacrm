@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { normalizePhone } from '@/lib/whatsapp/phone-utils'
 import { findExistingContact, isUniqueViolation } from '@/lib/contacts/dedupe'
 import { reopenClosedConversation } from '@/lib/conversations/reopen'
+import { mirrorEvolutionMedia } from '@/lib/whatsapp/mirror-evolution-media'
 
 let _adminClient: any = null
 
@@ -263,7 +264,42 @@ export async function POST(request: Request) {
       }
     }
 
-    const messageType = 'text'
+    const evolutionMessageType = data.messageType || 'conversation'
+
+    const mediaMessageTypes = [
+      'imageMessage',
+      'videoMessage',
+      'audioMessage',
+      'documentMessage',
+    ]
+
+    let messageType = 'text'
+    let contentTextFinal = contentText
+    let mediaUrl: string | null = null
+    let mediaType: string | null = null
+
+    if (mediaMessageTypes.includes(evolutionMessageType)) {
+      const mediaResult = await mirrorEvolutionMedia({
+        storage: supabaseAdmin().storage,
+        accountId,
+        messageId,
+        instanceName,
+        message: data.message ?? {},
+        messageType: evolutionMessageType,
+      })
+
+      messageType = mediaResult.contentType
+      contentTextFinal = mediaResult.contentText || contentText
+      mediaUrl = mediaResult.mediaUrl
+      mediaType = mediaResult.mediaType
+
+      console.log('[Evolution Webhook] Mídia processada:', {
+        messageId,
+        messageType,
+        mediaType,
+        hasMediaUrl: !!mediaUrl,
+      })
+    }
 
     const timestamp = data.messageTimestamp
       ? new Date(Number(data.messageTimestamp) * 1000).toISOString()
@@ -277,9 +313,9 @@ export async function POST(request: Request) {
             conversation_id: conversation.id,
             sender_type: 'customer',
             content_type: messageType,
-            content_text: contentText || `[${data.messageType || 'message'}]`,
-            media_url: null,
-            media_type: null,
+            content_text: contentTextFinal || `[${data.messageType || 'message'}]`,
+            media_url: mediaUrl,
+            media_type: mediaType,
             message_id: messageId,
             status: 'delivered',
             created_at: timestamp,
@@ -308,7 +344,7 @@ export async function POST(request: Request) {
       {
         p_conversation_id: conversation.id,
         p_last_message_text:
-          contentText || `[${data.messageType || 'message'}]`,
+            contentTextFinal || `[${data.messageType || 'message'}]`,
       }
     )
 
@@ -340,6 +376,12 @@ export async function POST(request: Request) {
     )
   }
 }
+
+
+
+
+
+
 
 
 
