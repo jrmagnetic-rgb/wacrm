@@ -147,7 +147,7 @@ const STATUS_OPTIONS: { label: string; value: ConversationStatus; color: string 
  * if we ever switch the asset, both spots update together.
  */
 const DOODLE_BG_CLASSES =
-  "bg-background bg-[url('/inbox-doodle.svg')] bg-repeat";
+  "bg-[#e3ddd7] bg-[url('/inbox-doodle.png')] bg-repeat";
 
 export function MessageThread({
   conversation,

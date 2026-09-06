@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -29,7 +29,7 @@ interface ConversationListProps {
   onConversationsLoaded: (conversations: Conversation[]) => void;
   /**
    * Increment to force the fetch effect below to refire. The parent
-   * bumps this on realtime reconnect / tab visibility â†’ visible so the
+   * bumps this on realtime reconnect / tab visibility → visible so the
    * list catches up on any events sent while the WS was disconnected
    * or the tab was throttled. Optional so existing callers keep working.
    */
@@ -76,14 +76,14 @@ export function ConversationList({
   // Keep the latest callback in a ref so the fetch effect below can
   // have a stable, empty-dep identity. Previously the fetch useCallback
   // depended on `onConversationsLoaded`, which depends on the parent's
-  // `deepLinkConvId` â€” so every URL change (including one the parent
+  // `deepLinkConvId` — so every URL change (including one the parent
   // triggered via router.replace after a click) caused a fresh
   // conversations fetch. That extra refetch was the trigger for the
   // deep-link auto-select running a second time and wiping the active
   // thread's messages.
   // Mutation lives in an effect (not render) per React 19's refs rule;
   // the fetch runs once on mount so it's fine to read the slightly
-  // older value â€” the very next render updates the ref for any
+  // older value — the very next render updates the ref for any
   // subsequent async completion.
   const onConversationsLoadedRef = useRef(onConversationsLoaded);
   useEffect(() => {
@@ -103,7 +103,7 @@ export function ConversationList({
       if (cancelled) return;
 
       if (error) {
-        // Supabase errors have non-enumerable properties â€” log fields explicitly
+        // Supabase errors have non-enumerable properties — log fields explicitly
         console.error("Failed to fetch conversations:", {
           message: error.message,
           details: error.details,
@@ -122,11 +122,11 @@ export function ConversationList({
       cancelled = true;
     };
     // `resyncToken` is included so the parent can force a refetch when
-    // the realtime channel reconnects or the tab regains focus â€” catches
+    // the realtime channel reconnects or the tab regains focus — catches
     // up on any events sent while the WS was disconnected or throttled.
   }, [resyncToken]);
 
-  // Tag definitions for the filter picker â€” loaded once so labels/colours
+  // Tag definitions for the filter picker — loaded once so labels/colours
   // stay stable regardless of which conversations happen to be loaded.
   useEffect(() => {
     const supabase = createClient();
@@ -140,7 +140,7 @@ export function ConversationList({
     };
   }, []);
 
-  // Company options are derived from the loaded conversations â€” there's no
+  // Company options are derived from the loaded conversations — there's no
   // separate companies table, and only companies with a live conversation
   // are worth offering as an inbox filter.
   const companies = useMemo(() => {
@@ -223,7 +223,7 @@ export function ConversationList({
     // w-full on mobile so the list occupies the whole viewport when it's
     // the single pane showing; fixed 320px on desktop where it shares the
     // row with the thread + contact sidebar.
-    <div className="flex h-full w-full flex-col border-r border-border bg-card lg:w-80">
+    <div className="flex h-full w-full flex-col border-r border-gray-200 bg-white lg:w-80">
       {/* Search + Filter */}
       <div className="space-y-2 border-b border-border p-3">
         <div className="relative">
@@ -394,7 +394,7 @@ export function ConversationList({
           `min-h-0` is load-bearing: a flex child defaults to
           min-height:auto, so without it this ScrollArea grows to fit
           every conversation instead of shrinking to the remaining
-          space â€” the list then overflows and gets clipped by the
+          space — the list then overflows and gets clipped by the
           parent's overflow-hidden with no scrollbar (issue #229). */}
       <ScrollArea className="min-h-0 flex-1">
         {loading ? (

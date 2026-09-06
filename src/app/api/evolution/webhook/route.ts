@@ -6,6 +6,34 @@ import { reopenClosedConversation } from '@/lib/conversations/reopen'
 
 let _adminClient: any = null
 
+async function fetchEvolutionProfilePicture(instanceName: string, number: string) {
+  try {
+    const response = await fetch(
+      "https://zap.delivery73.com/chat/fetchProfilePictureUrl/" + encodeURIComponent(instanceName),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.EVOLUTION_API_KEY!,
+        },
+        body: JSON.stringify({ number }),
+        cache: "no-store",
+      }
+    )
+
+    if (!response.ok) {
+      console.warn("[Evolution Webhook] Erro ao buscar foto:", response.status)
+      return null
+    }
+
+    const result = await response.json()
+    return result?.profilePictureUrl || null
+  } catch (error) {
+    console.warn("[Evolution Webhook] Falha ao buscar foto:", error)
+    return null
+  }
+}
+
 function supabaseAdmin() {
   if (!_adminClient) {
     _adminClient = createClient(
@@ -141,6 +169,36 @@ export async function POST(request: Request) {
 
     if (!contact) {
       return NextResponse.json({ received: true })
+    }
+
+    if (!contact.avatar_url) {
+      const profilePictureUrl = await fetchEvolutionProfilePicture(
+        instanceName,
+        phone
+      )
+
+      if (profilePictureUrl) {
+        const { error: avatarError } = await supabaseAdmin()
+          .from('contacts')
+          .update({
+            avatar_url: profilePictureUrl,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', contact.id)
+
+        if (avatarError) {
+          console.warn(
+            '[Evolution Webhook] Erro ao salvar foto do contato:',
+            avatarError
+          )
+        } else {
+          contact.avatar_url = profilePictureUrl
+          console.log('[Evolution Webhook] Foto do contato salva:', {
+            contactId: contact.id,
+            phone,
+          })
+        }
+      }
     }
 
     const { data: existingConversations, error: conversationFindError } =
