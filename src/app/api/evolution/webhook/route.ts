@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { normalizePhone } from '@/lib/whatsapp/phone-utils'
 import { findExistingContact, isUniqueViolation } from '@/lib/contacts/dedupe'
@@ -313,7 +313,7 @@ export async function POST(request: Request) {
             conversation_id: conversation.id,
             sender_type: 'customer',
             content_type: messageType,
-            content_text: contentTextFinal || `[${data.messageType || 'message'}]`,
+            content_text: contentTextFinal || (mediaMessageTypes.includes(evolutionMessageType) ? '' : `[${data.messageType || 'message'}]`),
             media_url: mediaUrl,
             media_type: mediaType,
             message_id: messageId,
@@ -344,7 +344,7 @@ export async function POST(request: Request) {
       {
         p_conversation_id: conversation.id,
         p_last_message_text:
-            contentTextFinal || `[${data.messageType || 'message'}]`,
+            contentTextFinal || (mediaMessageTypes.includes(evolutionMessageType) ? '' : `[${data.messageType || 'message'}]`),
       }
     )
 
