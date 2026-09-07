@@ -22,6 +22,7 @@ import {
   Plus,
   MessageSquareDashed,
   Zap,
+  Smile,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GatedButton } from "@/components/ui/gated-button";
@@ -629,26 +630,20 @@ export function MessageComposer({
           </Button>
         </div>
       ) : (
-        <div className="flex items-end gap-2">
-          {/* Attach menu — photo / video / document / voice. */}
+        <div className="flex items-center gap-2 bg-[#f0f2f5] px-3 py-2">
           <DropdownMenu>
             <DropdownMenuTrigger
               disabled={inputsDisabled || busy}
-              title={
-                readOnly
-                  ? t("readOnlyTitle")
-                  : inputsDisabled
-                    ? undefined
-                    : t("attachMedia")
-              }
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg p-0 text-slate-500 hover:bg-slate-100 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+              title={readOnly ? t("readOnlyTitle") : t("moreActions")}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full p-0 text-[#54656f] hover:bg-[#e9edef] disabled:opacity-50"
             >
               {busy ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Paperclip className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
               )}
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="start" className="border-slate-200 bg-white">
               <DropdownMenuItem onClick={() => imageInputRef.current?.click()}>
                 <ImageIcon className="mr-2 h-4 w-4" />
@@ -666,26 +661,6 @@ export function MessageComposer({
                 <Mic className="mr-2 h-4 w-4" />
                 {t("voiceNote")}
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* + menu — interactive messages + quick replies. Gated on the
-              24h window like free-form text (interactive requires it). */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              disabled={inputsDisabled}
-              title={
-                readOnly
-                  ? t("readOnlyTitle")
-                  : inputsDisabled
-                    ? undefined
-                    : t("moreActions")
-              }
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md p-0 text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Plus className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="border-border bg-popover">
               <DropdownMenuItem onClick={() => openInteractiveBuilder()}>
                 <MessageSquareDashed className="mr-2 h-4 w-4" />
                 {t("interactiveMessage")}
@@ -697,34 +672,41 @@ export function MessageComposer({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <GatedButton
-            variant="ghost"
-            size="sm"
-            canAct={!readOnly}
-            gateReason="send messages"
-            title={readOnly ? undefined : t("sendTemplate")}
-            className="h-9 w-9 shrink-0 rounded-lg p-0 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-            onClick={onOpenTemplates}
-          >
-            <LayoutTemplate className="h-4 w-4" />
-          </GatedButton>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              disabled={inputsDisabled || sessionExpired || readOnly}
+              title="Emoji"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full p-0 text-[#54656f] hover:bg-[#e9edef] disabled:opacity-50"
+            >
+              <Smile className="h-5 w-5" />
+            </DropdownMenuTrigger>
 
-          <GatedButton
-            variant="ghost"
-            size="sm"
-            canAct={!readOnly}
-            gateReason="send messages"
-            disabled={drafting}
-            title={readOnly ? undefined : t("draftWithAI")}
-            className="h-9 w-9 shrink-0 rounded-lg p-0 text-slate-500 hover:bg-slate-100 hover:text-primary"
-            onClick={handleDraft}
-          >
-            {drafting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-          </GatedButton>
+            <DropdownMenuContent
+              align="start"
+              className="grid w-[260px] grid-cols-8 gap-1 border-slate-200 bg-white p-2"
+            >
+              {[
+                "??","??","??","??","??","??","??","??",
+                "??","??","??","??","??","??","??","??",
+                "??","??","??","?","?","??","??","??",
+              ].map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-lg hover:bg-slate-100"
+                  onClick={() => {
+                    setText((prev) => prev + emoji);
+                    requestAnimationFrame(() => {
+                      adjustHeight();
+                      textareaRef.current?.focus();
+                    });
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <textarea
             ref={textareaRef}
@@ -736,40 +718,41 @@ export function MessageComposer({
                 ? t("readOnlyPlaceholder")
                 : sessionExpired
                   ? t("sessionExpiredPlaceholder")
-                  : t("typeMessagePlaceholder")
+                  : "Escreva aqui sua mensagem ou arraste um arquivo"
             }
             disabled={sessionExpired || readOnly}
             rows={1}
-            // Textarea keeps its own inline title — the GatedButton
-            // wrapping pattern doesn't apply to non-button inputs.
-            // The placeholder text also surfaces the read-only state.
             title={readOnly ? t("readOnlyTitle") : undefined}
             className={cn(
-              "flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 outline-none transition-colors focus:border-primary/50 focus:bg-white",
+              "min-h-[42px] flex-1 resize-none rounded-full border-0 bg-white px-4 py-2.5 text-sm text-[#111b21] placeholder:text-[#8696a0] outline-none focus:ring-0",
               (sessionExpired || readOnly) && "cursor-not-allowed opacity-50"
             )}
           />
 
-          <GatedButton
-            size="sm"
-            canAct={!readOnly}
-            gateReason="send messages"
-            disabled={!text.trim() || sessionExpired || sending}
-            onClick={handleSend}
-            className="h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
-          >
-            <Send className="h-4 w-4" />
-          </GatedButton>
+          {!text.trim() ? (
+            <GatedButton
+              size="sm"
+              canAct={!readOnly}
+              gateReason="record voice"
+              disabled={sessionExpired || readOnly || busy || recording}
+              onClick={() => void startRecording()}
+              className="h-9 w-9 shrink-0 rounded-full bg-transparent p-0 text-[#54656f] hover:bg-[#e9edef]"
+            >
+              <Mic className="h-5 w-5" />
+            </GatedButton>
+          ) : (
+            <GatedButton
+              size="sm"
+              canAct={!readOnly}
+              gateReason="send messages"
+              disabled={sessionExpired || sending}
+              onClick={handleSend}
+              className="h-9 w-9 shrink-0 rounded-full bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
+            >
+              <Send className="h-4 w-4" />
+            </GatedButton>
+          )}
         </div>
-      )}
-
-      {/* Hint sits outside the flex row so its height doesn't push
-          `items-end` buttons below the textarea. Indented to line up
-          under the textarea left edge. */}
-      {!draft && !recording && (
-        <p className="mt-1 pl-[5.5rem] text-[10px] text-slate-400">
-          {t("draftHint")}
-        </p>
       )}
 
       {/* Interactive-message builder dialog. */}
