@@ -247,8 +247,17 @@ export function MessageBubble({
             : "rounded-bl-md border-[#e5e5e5] bg-white text-[#111b21]",
         )}
       >
-        <div className="mb-1 text-[12px] font-semibold text-[#667781]">
-          {authorName}
+        <div className="mb-1 flex items-center gap-2 leading-none">
+          <button
+            type="button"
+            className="cursor-pointer text-[12px] font-semibold text-[#128CDB] hover:underline"
+            title={authorName}
+          >
+            {authorName}
+          </button>
+          <span className="text-[10px] font-normal text-[#8696A0]">
+            {format(new Date(message.created_at), "dd/MM/yyyy HH:mm")}
+          </span>
         </div>
         {reply && (
           <ReplyQuote
@@ -282,18 +291,6 @@ export function MessageBubble({
               {t("aiBadge")}
             </span>
           )}
-          <span
-            className={cn(
-              "text-[10px]",
-              // Outbound bubbles sit on the primary fill, so the
-              // timestamp must read against that (not the neutral
-              // foreground) — otherwise it goes low-contrast in light
-              // mode. Inbound bubbles use the muted surface.
-              isAgent ? "text-[#55705b]" : "text-slate-400",
-            )}
-          >
-            {time}
-          </span>
           {isAgent && <StatusIcon status={message.status} />}
         </div>
       </div>
