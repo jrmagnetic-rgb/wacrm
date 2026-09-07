@@ -147,13 +147,13 @@ export function MediaImageBubble({
     <img
       src={src}
       alt={t("imageAlt")}
-      className={cn(MEDIA_BOX, "rounded-xl object-contain")}
+      className="block h-auto max-h-[520px] w-[360px] max-w-full rounded-[14px] object-contain"
       onError={() => setBroken(true)}
     />
   );
 
   return (
-    <div className="group/media relative w-fit">
+    <div className="group/media relative inline-block w-fit max-w-full">
       {onOpen ? (
         <button
           type="button"
