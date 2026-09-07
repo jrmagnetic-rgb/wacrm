@@ -43,7 +43,7 @@ interface MessageBubbleProps {
 function StatusIcon({ status }: { status: Message["status"] }) {
   switch (status) {
     case "sending":
-      return <Clock className="h-3 w-3 text-muted-foreground" />;
+      return <Clock className="h-3 w-3 text-slate-400" />;
     case "sent":
       return <Check className="h-3 w-3 text-muted-foreground" />;
     case "delivered":
@@ -76,7 +76,7 @@ function MessageContent({
   switch (message.content_type) {
     case "text":
       return (
-        <p className="whitespace-pre-wrap break-words text-sm">
+        <p className="whitespace-pre-wrap break-words text-[13px] leading-relaxed">
           {message.content_text}
         </p>
       );
@@ -239,7 +239,7 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative w-fit min-w-0 max-w-full rounded-2xl border px-3 py-2 shadow-sm",
+          "relative w-fit min-w-0 max-w-[85%] rounded-2xl border px-3 py-2.5 shadow-sm",
           isAgent
             ? "rounded-br-md border-[#cfe8d4] bg-[#dcf8c6] text-[#111b21]"
             : "rounded-bl-md border-[#e5e5e5] bg-white text-[#111b21]",
@@ -260,7 +260,7 @@ export function MessageBubble({
         />
         <div
           className={cn(
-            "mt-1 flex items-center gap-1",
+            "mt-1.5 flex items-center gap-1 px-0.5",
             isAgent ? "justify-end" : "justify-start",
           )}
         >
@@ -284,7 +284,7 @@ export function MessageBubble({
               // timestamp must read against that (not the neutral
               // foreground) — otherwise it goes low-contrast in light
               // mode. Inbound bubbles use the muted surface.
-              isAgent ? "text-primary-foreground/70" : "text-muted-foreground",
+              isAgent ? "text-[#55705b]" : "text-slate-400",
             )}
           >
             {time}

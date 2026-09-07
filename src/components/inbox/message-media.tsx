@@ -31,7 +31,7 @@ import { useMediaBlobUrl } from "@/hooks/use-media-blob-url";
 type Translator = ReturnType<typeof useTranslations>;
 
 /** Inline media size cap, shared so the four bubbles can't drift apart. */
-const MEDIA_BOX = "max-h-64 max-w-60";
+const MEDIA_BOX = "max-h-80 max-w-72";
 
 export function MediaUnavailable({
   label,
@@ -41,8 +41,8 @@ export function MediaUnavailable({
   t: Translator;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-      <ImageOff className="h-4 w-4 shrink-0 text-muted-foreground" />
+    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-500">
+      <ImageOff className="h-4 w-4 shrink-0 text-slate-400" />
       <span>{t("unavailable", { label })}</span>
     </div>
   );
@@ -105,7 +105,7 @@ function MediaActionButton({
 
 function MediaPlaceholder({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-40 w-60 items-center justify-center rounded-lg bg-muted">
+    <div className="flex h-48 w-72 items-center justify-center rounded-xl bg-slate-100">
       {children}
     </div>
   );
@@ -129,7 +129,7 @@ export function MediaImageBubble({
   if (status === "error" || broken) {
     return (
       <MediaPlaceholder>
-        <ImageOff className="h-8 w-8 text-muted-foreground" />
+        <ImageOff className="h-8 w-8 text-slate-400" />
       </MediaPlaceholder>
     );
   }
@@ -147,7 +147,7 @@ export function MediaImageBubble({
     <img
       src={src}
       alt={t("imageAlt")}
-      className={cn(MEDIA_BOX, "rounded-lg object-contain")}
+      className={cn(MEDIA_BOX, "rounded-xl object-contain")}
       onError={() => setBroken(true)}
     />
   );
@@ -159,7 +159,7 @@ export function MediaImageBubble({
           type="button"
           onClick={onOpen}
           aria-label={t("viewImage")}
-          className="block cursor-zoom-in rounded-lg outline-none ring-offset-2 ring-offset-transparent focus-visible:ring-2 focus-visible:ring-ring"
+          className="block cursor-zoom-in overflow-hidden rounded-xl outline-none ring-offset-2 ring-offset-transparent focus-visible:ring-2 focus-visible:ring-ring"
         >
           {image}
         </button>
@@ -199,7 +199,7 @@ export function MediaVideoBubble({
         src={message.media_url}
         controls
         preload="metadata"
-        className={cn(MEDIA_BOX, "rounded-lg")}
+        className={cn(MEDIA_BOX, "rounded-xl")}
       />
       {/* Top-right, clear of the native controls — and always visible, since
           expanding is the only way to watch a clip capped at 15rem wide and
@@ -233,8 +233,8 @@ export function MediaAudioBubble({
   const { downloading, download } = useMediaDownload(message, t);
 
   return (
-    <div className="flex items-center gap-2">
-      <audio src={message.media_url} controls className="max-w-60" />
+    <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
+      <audio src={message.media_url} controls className="w-[520px] max-w-full" />
       <MediaActionButton
         icon={Download}
         label={t("download")}
@@ -260,9 +260,9 @@ export function MediaDocumentBubble({
         href={message.media_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex min-w-0 flex-1 items-center gap-2 rounded-lg bg-muted/50 px-3 py-2 text-sm hover:bg-muted"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-100"
       >
-        <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
+        <FileText className="h-5 w-5 shrink-0 text-slate-400" />
         <span className="truncate">{message.content_text || t("document")}</span>
       </a>
       <MediaActionButton

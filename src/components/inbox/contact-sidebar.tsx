@@ -121,7 +121,7 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
 
   if (!contact) {
     return (
-      <div className="flex h-full w-70 items-center justify-center border-l border-border bg-card">
+      <div className="flex h-full w-72 items-center justify-center border-l border-slate-200 bg-white">
         <p className="text-sm text-muted-foreground">{tThread("selectConversation")}</p>
       </div>
     );
@@ -131,23 +131,23 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
   const initials = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="flex h-full w-70 flex-col border-l border-border bg-card">
+    <div className="flex h-full w-72 flex-col border-l border-slate-200 bg-white">
       <ScrollArea className="flex-1">
-        <div className="p-4">
+        <div className="p-5">
           {/* Contact Info */}
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-lg font-semibold text-foreground">
+            <div className="flex h-18 w-18 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-700">
               {contact.avatar_url ? (
                 <img
                   src={contact.avatar_url}
                   alt={displayName}
-                  className="h-16 w-16 rounded-full object-cover"
+                  className="h-18 w-18 rounded-full object-cover"
                 />
               ) : (
                 initials
               )}
             </div>
-            <h3 className="mt-3 text-sm font-semibold text-foreground">
+            <h3 className="mt-4 text-base font-semibold text-slate-800">
               {displayName}
             </h3>
             {contact.company && (
@@ -156,17 +156,17 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
           </div>
 
           {/* Phone */}
-          <div className="mt-4 space-y-2">
+          <div className="mt-5 space-y-2">
             <button
               onClick={handleCopyPhone}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center gap-2 rounded-xl border border-slate-100 px-3 py-2.5 text-sm text-slate-600 transition-colors hover:bg-slate-50"
             >
-              <Phone className="h-4 w-4 text-muted-foreground" />
+              <Phone className="h-4 w-4 text-slate-400" />
               <span className="flex-1 text-left">{contact.phone}</span>
               {copied ? (
                 <Check className="h-3 w-3 text-primary" />
               ) : (
-                <Copy className="h-3 w-3 text-muted-foreground" />
+                <Copy className="h-3 w-3 text-slate-400" />
               )}
             </button>
 
@@ -179,17 +179,17 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
           </div>
 
           {/* Divider */}
-          <div className="my-4 border-t border-border" />
+          <div className="my-5 border-t border-slate-200" />
 
           {/* Tags */}
           <div>
-            <div className="flex items-center gap-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <div className="flex items-center gap-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
               <TagIcon className="h-3 w-3" />
               {tSidebar("tags")}
             </div>
             <div className="mt-2 flex flex-wrap gap-1">
               {tags.length === 0 ? (
-                <p className="px-1 text-xs text-muted-foreground">{tSidebar("noTags")}</p>
+                <p className="px-1 text-xs text-slate-400">{tSidebar("noTags")}</p>
               ) : (
                 tags.map((tag) => (
                   <span
@@ -223,12 +223,12 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
                 deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="rounded-lg bg-muted px-3 py-2"
+                    className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5"
                   >
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-semibold text-slate-800">
                       {deal.title}
                     </p>
-                    <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
                       <span>
                         {deal.currency ?? "$"}
                         {deal.value.toLocaleString()}
@@ -267,7 +267,7 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
                   onChange={(e) => setNewNote(e.target.value)}
                   placeholder={tSidebar("addNotePlaceholder")}
                   rows={2}
-                  className="flex-1 resize-none rounded-lg border border-border bg-muted px-3 py-2 text-xs text-foreground placeholder-muted-foreground outline-none focus:border-primary/50"
+                  className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-700 placeholder:text-slate-400 outline-none focus:border-primary/50 focus:bg-white"
                 />
                 <Button
                   size="sm"
@@ -285,10 +285,10 @@ export function ContactSidebar({ contact }: ContactSidebarProps) {
                     key={note.id}
                     className="rounded-lg bg-muted px-3 py-2"
                   >
-                    <p className="whitespace-pre-wrap text-xs text-muted-foreground">
+                    <p className="whitespace-pre-wrap text-xs text-slate-600">
                       {note.note_text}
                     </p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">
+                    <p className="mt-1 text-[10px] text-slate-400">
                       {format(new Date(note.created_at), "MMM d, yyyy HH:mm")}
                     </p>
                   </div>

@@ -57,18 +57,18 @@ export function Header({ onOpenSidebar }: HeaderProps) {
     "U";
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4 lg:px-6">
+    <header className="flex h-[72px] shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 lg:px-6">
       <div className="flex min-w-0 items-center gap-2">
         {/* Hamburger — mobile only. 44×44 hit target per Apple HIG. */}
         <button
           type="button"
           onClick={onOpenSidebar}
           aria-label={t("openMenu")}
-          className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 lg:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="truncate text-base font-semibold text-foreground sm:text-lg">
+        <h1 className="truncate text-base font-semibold text-slate-800 sm:text-lg">
           {t(titleKey as string)}
         </h1>
       </div>
@@ -78,43 +78,43 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
         <DropdownMenu>
         <DropdownMenuTrigger
-          className="flex items-center gap-2 rounded-md px-1 py-1 transition-colors hover:bg-muted/70 focus:bg-muted/70 focus:outline-none data-popup-open:bg-muted/70 sm:gap-3 sm:pl-1 sm:pr-3"
+          className="flex items-center gap-2 rounded-xl px-1.5 py-1.5 transition-colors hover:bg-slate-50 focus:bg-slate-50 focus:outline-none data-popup-open:bg-slate-50 sm:gap-3 sm:pl-1 sm:pr-3"
           aria-label={t("openAccountMenu")}
         >
-          <Avatar className="size-8">
+          <Avatar className="size-9">
             {profile?.avatar_url ? (
               <AvatarImage
                 src={profile.avatar_url}
                 alt={profile.full_name ?? t("defaultAvatar")}
               />
             ) : null}
-            <AvatarFallback className="bg-primary/10 text-sm font-medium text-primary">
+            <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
               {initial}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden text-sm font-medium text-foreground sm:inline">
+          <span className="hidden text-sm font-semibold text-slate-700 sm:inline">
             {profile?.full_name ?? t("defaultUser")}
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
           sideOffset={6}
-          className="min-w-56 bg-popover text-popover-foreground ring-border"
+          className="min-w-56 border border-slate-200 bg-white text-slate-700 shadow-lg ring-slate-200"
         >
-          <div className="px-2 py-1.5">
-            <p className="truncate text-sm font-medium text-foreground">
+          <div className="px-3 py-2">
+            <p className="truncate text-sm font-semibold text-slate-800">
               {profile?.full_name ?? t("defaultUser")}
             </p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-xs text-slate-500">
               {profile?.email ?? ""}
             </p>
           </div>
-          <DropdownMenuSeparator className="bg-border" />
+          <DropdownMenuSeparator className="bg-slate-200" />
           <DropdownMenuItem
             render={
               <Link
                 href="/settings?tab=profile"
-                className="text-popover-foreground focus:bg-accent focus:text-accent-foreground"
+                className="text-slate-700 focus:bg-slate-100 focus:text-slate-900"
               />
             }
           >

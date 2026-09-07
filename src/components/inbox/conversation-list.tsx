@@ -46,6 +46,22 @@ const STATUS_COLORS: Record<ConversationStatus, string> = {
 
 type InboxFilter = ConversationStatus | "all" | "unread";
 
+function getLastMessagePreview(text: string | null | undefined) {
+  if (!text) return null;
+
+  const value = text.trim();
+
+  if (/^\\[imageMessage\\]$/i.test(value)) return "?? Foto";
+  if (/^\\[videoMessage\\]$/i.test(value)) return "?? V?deo";
+  if (/^\\[audioMessage\\]$/i.test(value)) return "?? ?udio";
+  if (/^\\[documentMessage\\]$/i.test(value)) return "?? Documento";
+  if (/^\\[interactiveMessage\\]$/i.test(value)) return "? Mensagem interativa";
+  if (/^\\[templateMessage\\]$/i.test(value)) return "? Template";
+  if (/^\\[placeholderMessage\\]$/i.test(value)) return "Mensagem";
+
+  return text;
+}
+
 export function ConversationList({
   activeConversationId,
   onSelect,
@@ -223,16 +239,16 @@ export function ConversationList({
     // w-full on mobile so the list occupies the whole viewport when it's
     // the single pane showing; fixed 320px on desktop where it shares the
     // row with the thread + contact sidebar.
-    <div className="flex h-full w-full flex-col border-r border-gray-200 bg-white lg:w-80">
+    <div className="flex h-full w-full flex-col border-r border-slate-200 bg-white lg:w-72">
       {/* Search + Filter */}
-      <div className="space-y-2 border-b border-border p-3">
+      <div className="space-y-3 border-b border-slate-200 px-4 py-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
             value={search}
             onChange={handleSearchChange}
             placeholder={t("searchPlaceholder")}
-            className="border-border bg-muted pl-9 text-sm text-foreground placeholder-muted-foreground focus:border-primary/50"
+            className="border-slate-200 bg-slate-50 pl-10 text-sm text-slate-700 placeholder:text-slate-400 focus:border-primary/40 focus:bg-white"
           />
         </div>
 
@@ -454,17 +470,17 @@ function ConversationItem({
     <button
       onClick={handleClick}
       className={cn(
-        "flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50",
-        isActive && "border-l-2 border-primary bg-muted/70"
+        "flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3.5 text-left transition-colors hover:bg-slate-50",
+        isActive && "border-l-2 border-primary bg-primary/[0.06]"
       )}
     >
       {/* Avatar */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
         {contact?.avatar_url ? (
           <img
             src={contact.avatar_url}
             alt={displayName}
-            className="h-10 w-10 rounded-full object-cover"
+            className="h-11 w-11 rounded-full object-cover"
           />
         ) : (
           initials
@@ -475,7 +491,7 @@ function ConversationItem({
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate text-sm font-medium text-foreground">
+            <span className="truncate text-sm font-semibold text-slate-800">
               {displayName}
             </span>
             <span className={cn(
@@ -485,11 +501,11 @@ function ConversationItem({
               {conversation.channel === "instagram" ? "🟣 Instagram" : "🟢 WhatsApp"}
             </span>
           </div>
-          <span className="shrink-0 text-[10px] text-muted-foreground">{timeAgo}</span>
+          <span className="shrink-0 text-[11px] text-slate-400">{timeAgo}</span>
         </div>
         <div className="mt-0.5 flex items-center justify-between gap-2">
-          <p className="truncate text-xs text-muted-foreground">
-            {conversation.last_message_text || t("noMessagesYet")}
+          <p className="truncate text-xs text-slate-500">
+            {getLastMessagePreview(conversation.last_message_text) || t("noMessagesYet")}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
             {conversation.unread_count > 0 && (
