@@ -317,27 +317,7 @@ export function ConversationList({
               Selecionar todos
             </button>
           )}
-          {filtered.length > 0 && (
-            <button
-              type="button"
-              onClick={toggleSelectAll}
-              className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
-            >
-              <span
-                className={cn(
-                  "flex h-3.5 w-3.5 items-center justify-center rounded border",
-                  allVisibleSelected
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-slate-300 bg-white"
-                )}
-              >
-                {allVisibleSelected && (
-                  <span className="text-[9px] font-bold leading-none">?</span>
-                )}
-              </span>
-              Selecionar todos
-            </button>
-          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger className="inline-flex items-center justify-center h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
                 {activeFilter?.label ?? t("filterAll")}
