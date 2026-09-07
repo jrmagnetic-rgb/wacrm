@@ -27,6 +27,7 @@ interface ConversationListProps {
   onSelect: (conversation: Conversation) => void;
   conversations: Conversation[];
   onConversationsLoaded: (conversations: Conversation[]) => void;
+  onBulkClose: (conversationIds: string[]) => void;
   /**
    * Increment to force the fetch effect below to refire. The parent
    * bumps this on realtime reconnect / tab visibility → visible so the
@@ -67,6 +68,7 @@ export function ConversationList({
   onSelect,
   conversations,
   onConversationsLoaded,
+  onBulkClose,
   resyncToken = 0,
 }: ConversationListProps) {
   const t = useTranslations("Inbox.conversationList");
@@ -80,7 +82,8 @@ export function ConversationList({
   ], [t]);
 
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<InboxFilter>("all");
+  // A fila principal do inbox permanece fixa em "Aberto", como no TotalChat.
+  const [filter, setFilter] = useState<InboxFilter>("open");
   const [loading, setLoading] = useState(true);
   // Contact-based filters (issue #272). Tags use OR logic (a conversation
   // matches if its contact carries any selected tag), consistent with
@@ -88,6 +91,7 @@ export function ConversationList({
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [selectedConversationIds, setSelectedConversationIds] = useState<string[]>([]);
 
   // Keep the latest callback in a ref so the fetch effect below can
   // have a stable, empty-dep identity. Previously the fetch useCallback
@@ -233,6 +237,45 @@ export function ConversationList({
     [onSelect]
   );
 
+  const toggleConversationSelection = useCallback((conversationId: string) => {
+    setSelectedConversationIds((prev) =>
+      prev.includes(conversationId)
+        ? prev.filter((id) => id !== conversationId)
+        : [...prev, conversationId]
+    );
+  }, []);
+
+  const visibleConversationIds = useMemo(
+    () => filtered.map((conversation) => conversation.id),
+    [filtered]
+  );
+
+  const allVisibleSelected =
+    visibleConversationIds.length > 0 &&
+    visibleConversationIds.every((id) => selectedConversationIds.includes(id));
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedConversationIds((prev) => {
+      if (
+        visibleConversationIds.length > 0 &&
+        visibleConversationIds.every((id) => prev.includes(id))
+      ) {
+        return prev.filter((id) => !visibleConversationIds.includes(id));
+      }
+
+      return Array.from(new Set([...prev, ...visibleConversationIds]));
+    });
+  }, [visibleConversationIds]);
+
+  const handleBulkClose = useCallback(() => {
+    if (selectedConversationIds.length === 0) return;
+
+    onBulkClose(selectedConversationIds);
+    setSelectedConversationIds([]);
+  }, [onBulkClose, selectedConversationIds]);
+
+
+
   const activeFilter = FILTER_OPTIONS.find((o) => o.value === filter);
 
   return (
@@ -253,6 +296,48 @@ export function ConversationList({
         </div>
 
         <div className="flex flex-wrap items-center gap-1">
+          {filtered.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleSelectAll}
+              className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
+            >
+              <span
+                className={cn(
+                  "flex h-3.5 w-3.5 items-center justify-center rounded border",
+                  allVisibleSelected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-slate-300 bg-white"
+                )}
+              >
+                {allVisibleSelected && (
+                  <span className="text-[9px] font-bold leading-none">?</span>
+                )}
+              </span>
+              Selecionar todos
+            </button>
+          )}
+          {filtered.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleSelectAll}
+              className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800"
+            >
+              <span
+                className={cn(
+                  "flex h-3.5 w-3.5 items-center justify-center rounded border",
+                  allVisibleSelected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-slate-300 bg-white"
+                )}
+              >
+                {allVisibleSelected && (
+                  <span className="text-[9px] font-bold leading-none">?</span>
+                )}
+              </span>
+              Selecionar todos
+            </button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger className="inline-flex items-center justify-center h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
                 {activeFilter?.label ?? t("filterAll")}
@@ -429,6 +514,8 @@ export function ConversationList({
                 conversation={conv}
                 isActive={conv.id === activeConversationId}
                 onSelect={handleSelect}
+                isSelected={selectedConversationIds.includes(conv.id)}
+                onToggleSelect={toggleConversationSelection}
                 t={t}
               />
             ))}
@@ -443,6 +530,8 @@ interface ConversationItemProps {
   conversation: Conversation;
   isActive: boolean;
   onSelect: (conversation: Conversation) => void;
+  isSelected: boolean;
+  onToggleSelect: (conversationId: string) => void;
   t: ReturnType<typeof useTranslations>;
 }
 
@@ -450,6 +539,8 @@ function ConversationItem({
   conversation,
   isActive,
   onSelect,
+  isSelected,
+  onToggleSelect,
   t,
 }: ConversationItemProps) {
   const contact = conversation.contact;
@@ -459,6 +550,16 @@ function ConversationItem({
   const handleClick = useCallback(() => {
     onSelect(conversation);
   }, [onSelect, conversation]);
+
+  const handleToggleSelect = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      onToggleSelect(conversation.id);
+    },
+    [conversation.id, onToggleSelect]
+  );
+
+
 
   const timeAgo = conversation.last_message_at
     ? formatDistanceToNow(new Date(conversation.last_message_at), {
@@ -474,17 +575,49 @@ function ConversationItem({
         isActive && "border-l-2 border-primary bg-primary/[0.06]"
       )}
     >
-      {/* Avatar */}
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
-        {contact?.avatar_url ? (
-          <img
-            src={contact.avatar_url}
-            alt={displayName}
-            className="h-11 w-11 rounded-full object-cover"
-          />
-        ) : (
-          initials
-        )}
+      {/* Avatar / selection */}
+      <div
+        className="group/avatar relative h-11 w-11 shrink-0"
+        onClick={handleToggleSelect}
+      >
+        <div
+          className={cn(
+            "flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700 transition-opacity",
+            isSelected && "opacity-30"
+          )}
+        >
+          {contact?.avatar_url ? (
+            <img
+              src={contact.avatar_url}
+              alt={displayName}
+              className="h-11 w-11 rounded-full object-cover"
+            />
+          ) : (
+            initials
+          )}
+        </div>
+
+        <span
+          className={cn(
+            "absolute inset-0 flex items-center justify-center rounded-full bg-white/90 transition-opacity",
+            isSelected
+              ? "opacity-100"
+              : "opacity-0 group-hover/avatar:opacity-100"
+          )}
+        >
+          <span
+            className={cn(
+              "flex h-5 w-5 items-center justify-center rounded border-2",
+              isSelected
+                ? "border-primary bg-primary text-white"
+                : "border-slate-400 bg-white"
+            )}
+          >
+            {isSelected && (
+              <span className="text-[11px] font-bold leading-none">?</span>
+            )}
+          </span>
+        </span>
       </div>
 
       {/* Content */}

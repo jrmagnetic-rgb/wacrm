@@ -506,13 +506,74 @@ function InboxPageInner() {
     []
   );
 
+
+  const handleBulkClose = useCallback(
+    async (conversationIds: string[]) => {
+      if (conversationIds.length === 0) return;
+
+      const supabase = createClient();
+
+      const { error } = await supabase
+        .from("conversations")
+        .update({ status: "closed" })
+        .in("id", conversationIds);
+
+      if (error) {
+        console.error("Erro ao encerrar conversas:", error);
+        toast.error("N?o foi poss?vel encerrar as conversas.");
+        return;
+      }
+
+      setConversations((prev) =>
+        prev.filter((conversation) => !conversationIds.includes(conversation.id))
+      );
+
+      if (
+        activeConversation?.id &&
+        conversationIds.includes(activeConversation.id)
+      ) {
+        setActiveConversation(null);
+        setActiveContact(null);
+        setMessages([]);
+      }
+
+      toast.success(
+        conversationIds.length === 1
+          ? "Atendimento encerrado."
+          : `${conversationIds.length} atendimentos encerrados.`
+      );
+    },
+    [activeConversation]
+  );
+
   const handleStatusChange = useCallback(
     (conversationId: string, status: ConversationStatus) => {
+      if (status === "closed") {
+        // Encerrar atendimento remove a conversa da fila imediatamente.
+        // A conversa continua salva no banco com status "closed".
+        setConversations((prev) =>
+          prev.filter((c) => c.id !== conversationId)
+        );
+
+        if (activeConversation?.id === conversationId) {
+          setActiveConversation(null);
+          setActiveContact(null);
+          setMessages([]);
+        }
+
+        return;
+      }
+
       setConversations((prev) =>
-        prev.map((c) => (c.id === conversationId ? { ...c, status } : c))
+        prev.map((c) =>
+          c.id === conversationId ? { ...c, status } : c
+        )
       );
+
       if (activeConversation?.id === conversationId) {
-        setActiveConversation((prev) => (prev ? { ...prev, status } : prev));
+        setActiveConversation((prev) =>
+          prev ? { ...prev, status } : prev
+        );
       }
     },
     [activeConversation]
@@ -573,6 +634,7 @@ function InboxPageInner() {
             onSelect={handleSelectConversation}
             conversations={conversations}
             onConversationsLoaded={handleConversationsLoaded}
+            onBulkClose={handleBulkClose}
             resyncToken={resyncToken}
           />
         </div>
