@@ -9,7 +9,7 @@ import {
 } from "@/lib/inbox/conversations";
 import { cn } from "@/lib/utils";
 import type { Conversation, ConversationStatus, Tag } from "@/types";
-import { Search, ChevronDown, X } from "lucide-react";
+import { Search, ChevronDown, X, Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
@@ -296,7 +296,7 @@ export function ConversationList({
         </div>
 
         <div className="flex flex-wrap items-center gap-1">
-          {filtered.length > 0 && (
+          {selectedConversationIds.length > 0 && (
             <button
               type="button"
               onClick={toggleSelectAll}
@@ -311,10 +311,20 @@ export function ConversationList({
                 )}
               >
                 {allVisibleSelected && (
-                  <span className="text-[9px] font-bold leading-none">?</span>
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
                 )}
               </span>
               Selecionar todos
+            </button>
+          )}
+
+          {selectedConversationIds.length > 0 && (
+            <button
+              type="button"
+              onClick={handleBulkClose}
+              className="inline-flex h-7 items-center gap-1.5 rounded-md bg-red-50 px-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
+            >
+              Encerrar selecionadas
             </button>
           )}
 
@@ -495,6 +505,7 @@ export function ConversationList({
                 isActive={conv.id === activeConversationId}
                 onSelect={handleSelect}
                 isSelected={selectedConversationIds.includes(conv.id)}
+                selectionMode={selectedConversationIds.length > 0}
                 onToggleSelect={toggleConversationSelection}
                 t={t}
               />
@@ -511,6 +522,7 @@ interface ConversationItemProps {
   isActive: boolean;
   onSelect: (conversation: Conversation) => void;
   isSelected: boolean;
+  selectionMode: boolean;
   onToggleSelect: (conversationId: string) => void;
   t: ReturnType<typeof useTranslations>;
 }
@@ -520,6 +532,7 @@ function ConversationItem({
   isActive,
   onSelect,
   isSelected,
+  selectionMode,
   onToggleSelect,
   t,
 }: ConversationItemProps) {
@@ -528,8 +541,13 @@ function ConversationItem({
   const initials = displayName.charAt(0).toUpperCase();
 
   const handleClick = useCallback(() => {
+    if (selectionMode) {
+      onToggleSelect(conversation.id);
+      return;
+    }
+
     onSelect(conversation);
-  }, [onSelect, conversation]);
+  }, [onSelect, onToggleSelect, conversation, selectionMode]);
 
   const handleToggleSelect = useCallback(
     (event: React.MouseEvent) => {
@@ -580,7 +598,7 @@ function ConversationItem({
         <span
           className={cn(
             "absolute inset-0 flex items-center justify-center rounded-full bg-white/90 transition-opacity",
-            isSelected
+            selectionMode
               ? "opacity-100"
               : "opacity-0 group-hover/avatar:opacity-100"
           )}
@@ -594,7 +612,7 @@ function ConversationItem({
             )}
           >
             {isSelected && (
-              <span className="text-[11px] font-bold leading-none">?</span>
+              <Check className="h-3 w-3" strokeWidth={3} />
             )}
           </span>
         </span>
