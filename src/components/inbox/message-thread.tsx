@@ -174,6 +174,7 @@ export function MessageThread({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const currentUserName = profiles.find((profile) => profile.user_id === user?.id)?.full_name || "Voc?";
   const [reactions, setReactions] = useState<MessageReaction[]>([]);
   // Purely visual spin state for the manual-refresh button. The actual
   // refetch is fire-and-forget through `onRefresh` (which bumps the
@@ -1140,6 +1141,11 @@ export function MessageThread({
                       >
                         <MessageBubble
                           message={msg}
+                          authorName={
+                            msg.sender_type === "agent" || msg.sender_type === "bot"
+                              ? currentUserName
+                              : displayName
+                          }
                           reply={reply}
                           reactions={msgReactions}
                           currentUserId={user?.id}

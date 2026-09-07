@@ -27,6 +27,7 @@ import { useTranslations } from "next-intl";
 
 interface MessageBubbleProps {
   message: Message;
+  authorName: string;
   /** Pre-computed quote info for messages that reply to another. */
   reply?: { authorLabel: string; preview: string } | null;
   reactions?: MessageReaction[];
@@ -217,6 +218,7 @@ function MessageContent({
 
 export function MessageBubble({
   message,
+  authorName,
   reply,
   reactions,
   currentUserId,
@@ -245,6 +247,9 @@ export function MessageBubble({
             : "rounded-bl-md border-[#e5e5e5] bg-white text-[#111b21]",
         )}
       >
+        <div className="mb-1 text-[12px] font-semibold text-[#667781]">
+          {authorName}
+        </div>
         {reply && (
           <ReplyQuote
             authorLabel={reply.authorLabel}
