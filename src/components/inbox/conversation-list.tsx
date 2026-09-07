@@ -9,7 +9,7 @@ import {
 } from "@/lib/inbox/conversations";
 import { cn } from "@/lib/utils";
 import type { Conversation, ConversationStatus, Tag } from "@/types";
-import { Search, ChevronDown, X, Check } from "lucide-react";
+import { Search, ChevronDown, X, Check, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
@@ -557,30 +557,51 @@ function ConversationItem({
     [conversation.id, onToggleSelect]
   );
 
+  const lastMessageDate = conversation.last_message_at
+    ? new Date(conversation.last_message_at)
+    : null;
 
+  const timeLabel = lastMessageDate
+    ? (() => {
+        const now = new Date();
+        const sameDay =
+          now.getFullYear() === lastMessageDate.getFullYear() &&
+          now.getMonth() === lastMessageDate.getMonth() &&
+          now.getDate() === lastMessageDate.getDate();
 
-  const timeAgo = conversation.last_message_at
-    ? formatDistanceToNow(new Date(conversation.last_message_at), {
-        addSuffix: false,
-      })
+        return sameDay
+          ? new Intl.DateTimeFormat("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }).format(lastMessageDate)
+          : new Intl.DateTimeFormat("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            }).format(lastMessageDate);
+      })()
     : "";
+
+  const preview =
+    getLastMessagePreview(conversation.last_message_text) ||
+    t("noMessagesYet");
 
   return (
     <button
       onClick={handleClick}
       className={cn(
-        "flex w-full items-start gap-3 border-b border-slate-100 px-4 py-3.5 text-left transition-colors hover:bg-slate-50",
+        "flex w-full items-center gap-3 border-b border-slate-100 px-3 py-3 text-left transition-colors hover:bg-slate-50",
         isActive && "border-l-2 border-primary bg-primary/[0.06]"
       )}
     >
       {/* Avatar / selection */}
       <div
-        className="group/avatar relative h-11 w-11 shrink-0"
+        className="group/avatar relative h-12 w-12 shrink-0"
         onClick={handleToggleSelect}
       >
         <div
           className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700 transition-opacity",
+            "flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-sm font-semibold text-slate-700 transition-opacity",
             isSelected && "opacity-30"
           )}
         >
@@ -588,7 +609,7 @@ function ConversationItem({
             <img
               src={contact.avatar_url}
               alt={displayName}
-              className="h-11 w-11 rounded-full object-cover"
+              className="h-12 w-12 rounded-full object-cover"
             />
           ) : (
             initials
@@ -618,38 +639,56 @@ function ConversationItem({
         </span>
       </div>
 
-      {/* Content */}
+      {/* Conversation content - TotalChat style */}
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate text-sm font-semibold text-slate-800">
+            <span className="truncate text-[14px] font-semibold text-slate-800">
               {displayName}
             </span>
-            <span className={cn(
-              "shrink-0 text-[10px] font-medium",
-              conversation.channel === "instagram" ? "text-purple-600" : "text-green-600"
-            )}>
-              {conversation.channel === "instagram" ? "🟣 Instagram" : "🟢 WhatsApp"}
+
+            <span
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1 text-[10px] font-medium",
+                conversation.channel === "instagram"
+                  ? "text-purple-600"
+                  : "text-green-600"
+              )}
+            >
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  conversation.channel === "instagram"
+                    ? "bg-purple-500"
+                    : "bg-green-500"
+                )}
+              />
+              {conversation.channel === "instagram"
+                ? "Instagram"
+                : "WhatsApp"}
             </span>
           </div>
-          <span className="shrink-0 text-[11px] text-slate-400">{timeAgo}</span>
+
+          <span className="shrink-0 text-[11px] text-slate-400">
+            {timeLabel}
+          </span>
         </div>
-        <div className="mt-0.5 flex items-center justify-between gap-2">
-          <p className="truncate text-xs text-slate-500">
-            {getLastMessagePreview(conversation.last_message_text) || t("noMessagesYet")}
+
+        <div className="mt-1 flex min-w-0 items-center justify-between gap-2">
+          <p className="min-w-0 truncate text-[12px] leading-4 text-slate-500">
+            {preview}
           </p>
-          <div className="flex shrink-0 items-center gap-1.5">
+
+          <div className="flex shrink-0 items-center gap-2">
             {conversation.unread_count > 0 && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1.5 text-[10px] font-bold text-white">
                 {conversation.unread_count}
               </span>
             )}
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                STATUS_COLORS[conversation.status]
-              )}
-              title={conversation.status}
+
+            <MessageCircle
+              className="h-3.5 w-3.5 text-green-700"
+              strokeWidth={2.5}
             />
           </div>
         </div>
@@ -657,5 +696,4 @@ function ConversationItem({
     </button>
   );
 }
-
 
