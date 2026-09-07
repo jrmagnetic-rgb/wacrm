@@ -241,13 +241,13 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative w-fit min-w-0 max-w-[95%] rounded-[18px] border px-2 py-2 shadow-[0_1px_3px_rgba(0,0,0,0.10)] overflow-hidden",
+          "relative w-fit min-w-[190px] min-h-0 max-w-[95%] rounded-[18px] border px-2 py-2 shadow-[0_1px_3px_rgba(0,0,0,0.10)] overflow-hidden",
           isAgent
             ? "rounded-br-md border-[#cfe8d4] bg-[#dcf8c6] text-[#111b21]"
             : "rounded-bl-md border-[#e5e5e5] bg-white text-[#111b21]",
         )}
       >
-        <div className="mb-1 flex items-center gap-2 leading-none">
+        <div className="mb-1 flex items-center gap-2 whitespace-nowrap leading-none">
           <button
             type="button"
             className="cursor-pointer text-[12px] font-semibold text-[#128CDB] hover:underline"
@@ -255,7 +255,7 @@ export function MessageBubble({
           >
             {authorName}
           </button>
-          <span className="text-[10px] font-normal text-[#8696A0]">
+          <span className="whitespace-nowrap text-[10px] font-normal text-[#8696A0]">
             {format(new Date(message.created_at), "dd/MM/yyyy HH:mm")}
           </span>
         </div>
