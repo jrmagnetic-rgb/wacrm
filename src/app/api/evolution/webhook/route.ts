@@ -4,6 +4,7 @@ import { normalizePhone } from '@/lib/whatsapp/phone-utils'
 import { findExistingContact, isUniqueViolation } from '@/lib/contacts/dedupe'
 import { reopenClosedConversation } from '@/lib/conversations/reopen'
 import { mirrorEvolutionMedia } from '@/lib/whatsapp/mirror-evolution-media'
+import { dispatchInboundToFlows } from '@/lib/flows/engine'
 
 let _adminClient: any = null
 
@@ -97,9 +98,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true })
     }
 
+    const interactiveReplyId =
+      data.message?.buttonsResponseMessage?.selectedButtonId ??
+      data.message?.listResponseMessage?.singleSelectReply?.selectedRowId ??
+      null
+
     const contentText =
       data.message?.conversation ??
       data.message?.extendedTextMessage?.text ??
+      data.message?.buttonsResponseMessage?.selectedDisplayText ??
+      data.message?.listResponseMessage?.title ??
+      data.message?.listResponseMessage?.singleSelectReply?.selectedRowId ??
       ''
 
     const contactName = data.pushName || phone
@@ -359,6 +368,44 @@ export async function POST(request: Request) {
       supabaseAdmin(),
       conversation
     )
+
+    // ============================================================
+    // Flow Engine
+    // ============================================================
+
+    const { count: inboundCount } = await supabaseAdmin()
+      .from('messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('conversation_id', conversation.id)
+      .eq('sender_type', 'customer')
+
+    const isFirstInboundMessage = (inboundCount ?? 0) <= 1
+
+    const flowResult = await dispatchInboundToFlows({
+      accountId,
+      userId: configOwnerUserId,
+      contactId: contact.id,
+      conversationId: conversation.id,
+      message: interactiveReplyId
+        ? {
+            kind: 'interactive_reply',
+            reply_id: interactiveReplyId,
+            reply_title: contentText ?? '',
+            meta_message_id: messageId,
+          }
+        : {
+            kind: 'text',
+            text: contentText ?? '',
+            meta_message_id: messageId,
+          },
+      isFirstInboundMessage,
+    })
+
+    console.log('[Evolution Webhook] Flow Engine:', {
+      consumed: flowResult.consumed,
+      outcome: flowResult.outcome,
+      flow_run_id: flowResult.flow_run_id ?? null,
+    })
 
     console.log('[Evolution Webhook] Mensagem salva:', {
       messageId,
