@@ -172,7 +172,7 @@ export async function POST(request: Request) {
         await ensureImageHeaderHandle(payload, accessToken)
       } catch (e) {
         return NextResponse.json(
-          { error: e instanceof Error ? e.message : 'Header image upload failed.' },
+          { error: e instanceof Error ? e.message : 'Falha ao enviar a imagem do cabeçalho.' },
           { status: 400 },
         )
       }

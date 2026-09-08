@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -533,7 +533,7 @@ function InboxPageInner() {
 
     if (error) {
       console.error("Erro ao encerrar conversas:", error);
-      toast.error("N?o foi poss?vel encerrar as conversas.");
+      toast.error("Não foi possível encerrar as conversas.");
       return;
     }
 
@@ -799,4 +799,3 @@ function InboxPageInner() {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -121,7 +121,7 @@ export function WhatsAppConfig() {
         if (data.status === 'open') {
           toast.success('WhatsApp conectado!');
         } else {
-          toast.success('ConexÃ£o iniciada. Aguarde alguns segundos.');
+          toast.success('Conexão iniciada. Aguarde alguns segundos.');
         }
       }
     } catch (error) {
@@ -174,13 +174,13 @@ export function WhatsAppConfig() {
               <AlertTitle className="mb-0 text-foreground">
                 {connected
                   ? 'WhatsApp conectado'
-                  : 'WhatsApp nÃ£o conectado'}
+                  : 'WhatsApp não conectado'}
               </AlertTitle>
             </div>
 
             <AlertDescription className="text-muted-foreground">
               {connected
-                ? 'Seu WhatsApp estÃ¡ conectado e pronto para receber e enviar mensagens.'
+                ? 'Seu WhatsApp está conectado e pronto para receber e enviar mensagens.'
                 : 'Conecte seu WhatsApp escaneando o QR Code pelo aplicativo.'}
             </AlertDescription>
           </Alert>
@@ -362,4 +362,3 @@ export function WhatsAppConfig() {
     </section>
   );
 }
-

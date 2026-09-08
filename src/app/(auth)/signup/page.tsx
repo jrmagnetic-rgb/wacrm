@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
@@ -49,12 +49,12 @@ function SignupPageInner() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("As senhas não coincidem");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
@@ -242,6 +242,3 @@ function SignupPageInner() {
     </div>
   );
 }
-
-
-

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -811,7 +811,7 @@ export function MessageThread({
         return;
       }
       if (messageId.startsWith("temp-")) {
-        toast.error("Wait for the message to finish sending");
+        toast.error("Aguarde o envio da mensagem terminar");
         return;
       }
 
@@ -1330,4 +1330,3 @@ export function MessageThread({
     </div>
   );
 }
-

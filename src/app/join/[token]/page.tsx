@@ -197,7 +197,7 @@ export default function JoinPage() {
       window.location.href = '/dashboard';
     } catch (err) {
       console.error('[join] redeem error:', err);
-      toast.error('Could not reach the server');
+      toast.error('Não foi possível acessar o servidor');
       setAccepting(false);
     }
   }, [token]);

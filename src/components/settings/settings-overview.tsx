@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
@@ -192,7 +192,7 @@ export function SettingsOverview({
           ? t('viewTeamMembers')
           : `${t('membersCount', { count: counts.members })}${
               counts.pendingInvites
-                ? ` Â· ${t('pendingInvites', { count: counts.pendingInvites })}`
+                ? ` · ${t('pendingInvites', { count: counts.pendingInvites })}`
                 : ''
             }`,
     },
@@ -204,7 +204,7 @@ export function SettingsOverview({
           ? t('manageTemplates')
           : `${t('templatesCount', { count: counts.templates })}${
               counts.templatesPending
-                ? ` Â· ${t('pendingReview', { count: counts.templatesPending })}`
+                ? ` · ${t('pendingReview', { count: counts.templatesPending })}`
                 : ''
             }`,
     },
@@ -219,7 +219,7 @@ export function SettingsOverview({
       subtitle:
         counts?.tags == null && counts?.customFields == null
           ? t('tagsAndFields')
-          : `${t('tagsCount', { count: counts?.tags ?? 0 })} Â· ${t('fieldsCount', {
+          : `${t('tagsCount', { count: counts?.tags ?? 0 })} · ${t('fieldsCount', {
               count: counts?.customFields ?? 0,
             })}`,
     },
@@ -300,4 +300,3 @@ export function SettingsOverview({
     </section>
   );
 }
-

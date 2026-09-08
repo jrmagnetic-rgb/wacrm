@@ -151,7 +151,7 @@ export function MembersTab() {
 
       if (!mres.ok) {
         const payload = await mres.json().catch(() => ({}));
-        toast.error(payload.error || 'Failed to load members');
+        toast.error(payload.error || 'Não foi possível carregar os membros');
         return;
       }
       const mdata = (await mres.json()) as { members: Member[] };
@@ -160,7 +160,7 @@ export function MembersTab() {
       if (ires) {
         if (!ires.ok) {
           const payload = await ires.json().catch(() => ({}));
-          toast.error(payload.error || 'Failed to load invitations');
+          toast.error(payload.error || 'Não foi possível carregar os convites');
           return;
         }
         const idata = (await ires.json()) as { invitations: Invitation[] };
@@ -170,7 +170,7 @@ export function MembersTab() {
       }
     } catch (err) {
       console.error('[MembersTab] load error:', err);
-      toast.error('Could not reach the server');
+      toast.error('Não foi possível acessar o servidor');
     } finally {
       setLoading(false);
     }
@@ -222,7 +222,7 @@ export function MembersTab() {
         ),
       );
       console.error('[MembersTab] role change error:', err);
-      toast.error('Could not reach the server');
+      toast.error('Não foi possível acessar o servidor');
     } finally {
       setPendingMemberAction(null);
     }
@@ -248,7 +248,7 @@ export function MembersTab() {
       setRemovingMember(null);
     } catch (err) {
       console.error('[MembersTab] remove error:', err);
-      toast.error('Could not reach the server');
+      toast.error('Não foi possível acessar o servidor');
     } finally {
       setPendingMemberAction(null);
     }
@@ -268,7 +268,7 @@ export function MembersTab() {
       setInvitations((prev) => prev.filter((i) => i.id !== invite.id));
     } catch (err) {
       console.error('[MembersTab] revoke error:', err);
-      toast.error('Could not reach the server');
+      toast.error('Não foi possível acessar o servidor');
     }
   }
 
