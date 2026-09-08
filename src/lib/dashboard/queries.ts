@@ -318,7 +318,7 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
     items.push({
       id: `msg-${m.id}`,
       kind: 'message',
-      text: `New message from ${who}`,
+      text: `Nova mensagem de ${who}`,
       at: m.created_at,
       href: `/inbox?c=${m.conversation_id}`,
     })
@@ -328,7 +328,7 @@ export async function loadActivity(db: DB, limit = 20): Promise<ActivityItem[]> 
     items.push({
       id: `contact-${c.id}`,
       kind: 'contact',
-      text: `New contact: ${c.name || c.phone}`,
+      text: `Novo contato: ${c.name || c.phone}`,
       at: c.created_at,
       href: '/contacts',
     })

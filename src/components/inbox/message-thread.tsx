@@ -174,6 +174,8 @@ export function MessageThread({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [closeDialogOpen, setCloseDialogOpen] = useState(false);
+  const [closeReason, setCloseReason] = useState<string>("");
   const currentUserName = profiles.find((profile) => profile.user_id === user?.id)?.full_name || "Voc?";
   const [reactions, setReactions] = useState<MessageReaction[]>([]);
   // Purely visual spin state for the manual-refresh button. The actual
@@ -644,6 +646,12 @@ export function MessageThread({
     async (status: ConversationStatus) => {
       if (!conversation) return;
 
+      if (status === "closed") {
+        setCloseReason("");
+        setCloseDialogOpen(true);
+        return;
+      }
+
       const supabase = createClient();
       await supabase
         .from("conversations")
@@ -654,6 +662,22 @@ export function MessageThread({
     },
     [conversation, onStatusChange]
   );
+
+  const handleConfirmClose = useCallback(async () => {
+    if (!conversation || !closeReason) return;
+
+    const supabase = createClient();
+    await supabase
+      .from("conversations")
+      .update({
+        status: "closed",
+      })
+      .eq("id", conversation.id);
+
+    onStatusChange(conversation.id, "closed");
+    setCloseDialogOpen(false);
+    setCloseReason("");
+  }, [conversation, closeReason, onStatusChange]);
 
   const handleOpenTemplates = useCallback(() => {
     setTemplateModalOpen(true);
@@ -1197,6 +1221,97 @@ export function MessageThread({
         replyTo={replyTo}
         onClearReply={() => setReplyTo(null)}
       />
+
+      {closeDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setCloseDialogOpen(false);
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="close-dialog-title"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl"
+          >
+            <div className="mb-4">
+              <h2
+                id="close-dialog-title"
+                className="text-base font-semibold text-slate-800"
+              >
+                Encerrar atendimento
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Selecione o motivo do encerramento:
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              {[
+                {
+                  value: "Atendimento finalizado",
+                  label: "Atendimento finalizado",
+                },
+                {
+                  value: "N?o respondeu",
+                  label: "N?o respondeu",
+                },
+                {
+                  value: "Cliente desistiu",
+                  label: "Cliente desistiu",
+                },
+              ].map((reason) => (
+                <label
+                  key={reason.value}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-3 transition-colors",
+                    closeReason === reason.value
+                      ? "border-primary bg-primary/[0.06]"
+                      : "border-slate-200 hover:bg-slate-50"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="close-reason"
+                    value={reason.value}
+                    checked={closeReason === reason.value}
+                    onChange={(event) => setCloseReason(event.target.value)}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  <span className="text-sm font-medium text-slate-700">
+                    {reason.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCloseDialogOpen(false);
+                  setCloseReason("");
+                }}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                disabled={!closeReason}
+                onClick={handleConfirmClose}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Encerrar atendimento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <TemplatePicker
         open={templateModalOpen}

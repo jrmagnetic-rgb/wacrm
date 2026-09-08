@@ -329,23 +329,23 @@ export function ConversationList({
           )}
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex items-center justify-center h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
+            <DropdownMenuTrigger className="inline-flex h-7 items-center justify-center gap-1 rounded-md px-2 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800">
                 {activeFilter?.label ?? t("filterAll")}
                 <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="border-border bg-popover"
+              className="border-slate-200 bg-white shadow-lg"
             >
               {FILTER_OPTIONS.map((opt) => (
                 <DropdownMenuItem
                   key={opt.value}
                   onClick={() => setFilter(opt.value)}
                   className={cn(
-                    "text-sm",
+                    "text-sm text-slate-700",
                     filter === opt.value
                       ? "text-primary"
-                      : "text-popover-foreground"
+                      : "text-slate-700"
                   )}
                 >
                   {opt.label}
@@ -416,10 +416,10 @@ export function ConversationList({
                 <DropdownMenuItem
                   onClick={() => setSelectedCompany(null)}
                   className={cn(
-                    "text-sm",
+                    "text-sm text-slate-700",
                     selectedCompany === null
                       ? "text-primary"
-                      : "text-popover-foreground"
+                      : "text-slate-700"
                   )}
                 >
                   {t("allCompanies")}
@@ -429,10 +429,10 @@ export function ConversationList({
                     key={co}
                     onClick={() => setSelectedCompany(co)}
                     className={cn(
-                      "text-sm",
+                      "text-sm text-slate-700",
                       selectedCompany === co
                         ? "text-primary"
-                        : "text-popover-foreground"
+                        : "text-slate-700"
                     )}
                   >
                     <span className="truncate">{co}</span>
@@ -590,7 +590,7 @@ function ConversationItem({
     <button
       onClick={handleClick}
       className={cn(
-        "flex w-full items-center gap-3 border-b border-slate-100 px-3 py-3 text-left transition-colors hover:bg-slate-50",
+        "flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3.5 text-left transition-colors hover:bg-slate-50",
         isActive && "border-l-2 border-primary bg-primary/[0.06]"
       )}
     >
@@ -643,7 +643,7 @@ function ConversationItem({
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate text-[14px] font-semibold text-slate-800">
+            <span className="truncate text-[14px] font-semibold leading-5 text-slate-800">
               {displayName}
             </span>
 
@@ -674,8 +674,8 @@ function ConversationItem({
           </span>
         </div>
 
-        <div className="mt-1 flex min-w-0 items-center justify-between gap-2">
-          <p className="min-w-0 truncate text-[12px] leading-4 text-slate-500">
+        <div className="mt-1.5 flex min-w-0 items-center justify-between gap-2">
+          <p className="min-w-0 truncate text-[12px] leading-5 text-slate-500">
             {preview}
           </p>
 

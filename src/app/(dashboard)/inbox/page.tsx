@@ -48,6 +48,9 @@ function InboxPageInner() {
     useState<Conversation | null>(null);
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [bulkCloseDialogOpen, setBulkCloseDialogOpen] = useState(false);
+  const [bulkCloseReason, setBulkCloseReason] = useState("");
+  const [bulkCloseIds, setBulkCloseIds] = useState<string[]>([]);
   const [whatsappConnected, setWhatsappConnected] = useState<boolean | null>(
     null
   );
@@ -508,43 +511,57 @@ function InboxPageInner() {
 
 
   const handleBulkClose = useCallback(
-    async (conversationIds: string[]) => {
+    (conversationIds: string[]) => {
       if (conversationIds.length === 0) return;
 
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from("conversations")
-        .update({ status: "closed" })
-        .in("id", conversationIds);
-
-      if (error) {
-        console.error("Erro ao encerrar conversas:", error);
-        toast.error("N?o foi poss?vel encerrar as conversas.");
-        return;
-      }
-
-      setConversations((prev) =>
-        prev.filter((conversation) => !conversationIds.includes(conversation.id))
-      );
-
-      if (
-        activeConversation?.id &&
-        conversationIds.includes(activeConversation.id)
-      ) {
-        setActiveConversation(null);
-        setActiveContact(null);
-        setMessages([]);
-      }
-
-      toast.success(
-        conversationIds.length === 1
-          ? "Atendimento encerrado."
-          : `${conversationIds.length} atendimentos encerrados.`
-      );
+      setBulkCloseIds(conversationIds);
+      setBulkCloseReason("");
+      setBulkCloseDialogOpen(true);
     },
-    [activeConversation]
+    []
   );
+
+  const handleConfirmBulkClose = useCallback(async () => {
+    if (bulkCloseIds.length === 0 || !bulkCloseReason) return;
+
+    const supabase = createClient();
+
+    const { error } = await supabase
+      .from("conversations")
+      .update({ status: "closed" })
+      .in("id", bulkCloseIds);
+
+    if (error) {
+      console.error("Erro ao encerrar conversas:", error);
+      toast.error("N?o foi poss?vel encerrar as conversas.");
+      return;
+    }
+
+    setConversations((prev) =>
+      prev.filter((conversation) => !bulkCloseIds.includes(conversation.id))
+    );
+
+    if (
+      activeConversation?.id &&
+      bulkCloseIds.includes(activeConversation.id)
+    ) {
+      setActiveConversation(null);
+      setActiveContact(null);
+      setMessages([]);
+    }
+
+    const count = bulkCloseIds.length;
+
+    setBulkCloseDialogOpen(false);
+    setBulkCloseIds([]);
+    setBulkCloseReason("");
+
+    toast.success(
+      count === 1
+        ? "Atendimento encerrado."
+        : `${count} atendimentos encerrados.`
+    );
+  }, [activeConversation, bulkCloseIds, bulkCloseReason]);
 
   const handleStatusChange = useCallback(
     (conversationId: string, status: ConversationStatus) => {
@@ -682,6 +699,103 @@ function InboxPageInner() {
           </div>
         )}
       </div>
+      
+      {bulkCloseDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setBulkCloseDialogOpen(false);
+              setBulkCloseIds([]);
+              setBulkCloseReason("");
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bulk-close-dialog-title"
+            className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-xl"
+          >
+            <div className="mb-4">
+              <h2
+                id="bulk-close-dialog-title"
+                className="text-base font-semibold text-slate-800"
+              >
+                Encerrar atendimentos
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Selecione o motivo do encerramento para os atendimentos selecionados.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              {[
+                {
+                  value: "Atendimento finalizado",
+                  label: "Atendimento finalizado",
+                },
+                {
+                  value: "N\u00e3o respondeu",
+                  label: "N\u00e3o respondeu",
+                },
+                {
+                  value: "Cliente desistiu",
+                  label: "Cliente desistiu",
+                },
+              ].map((reason) => (
+                <label
+                  key={reason.value}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-3 transition-colors",
+                    bulkCloseReason === reason.value
+                      ? "border-primary bg-primary/[0.06]"
+                      : "border-slate-200 hover:bg-slate-50"
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="bulk-close-reason"
+                    value={reason.value}
+                    checked={bulkCloseReason === reason.value}
+                    onChange={(event) =>
+                      setBulkCloseReason(event.target.value)
+                    }
+                    className="h-4 w-4 accent-primary"
+                  />
+                  <span className="text-sm font-medium text-slate-700">
+                    {reason.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setBulkCloseDialogOpen(false);
+                  setBulkCloseIds([]);
+                  setBulkCloseReason("");
+                }}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                disabled={!bulkCloseReason}
+                onClick={handleConfirmBulkClose}
+                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Encerrar atendimentos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

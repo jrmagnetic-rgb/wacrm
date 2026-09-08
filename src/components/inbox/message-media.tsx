@@ -234,7 +234,7 @@ export function MediaAudioBubble({
 
   return (
     <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-      <audio src={message.media_url} controls className="w-[520px] max-w-full" />
+      <audio src={message.media_url} controls className="h-12 w-[360px] max-w-full" />
       <MediaActionButton
         icon={Download}
         label={t("download")}
