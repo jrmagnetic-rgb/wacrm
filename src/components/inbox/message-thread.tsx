@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -1256,8 +1256,8 @@ export function MessageThread({
                   label: "Atendimento finalizado",
                 },
                 {
-                  value: "N?o respondeu",
-                  label: "N?o respondeu",
+                  value: "Não respondeu",
+                  label: "Não respondeu",
                 },
                 {
                   value: "Cliente desistiu",
@@ -1330,3 +1330,4 @@ export function MessageThread({
     </div>
   );
 }
+
