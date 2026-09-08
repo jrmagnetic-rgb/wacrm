@@ -1,0 +1,162 @@
+﻿
+Path                                                                                LineNumber Line                                                                            
+----                                                                                ---------- ----                                                                            
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\(dashboard)\inbox\page.tsx                  536       toast.error("N?o foi poss?vel encerrar as conversas.");                   
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts               15         { error: 'Não autorizado' },                                            
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts               28         { error: 'Sua conta não está vinculada a uma organização.' },           
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts               38         { error: 'Evolution API não configurada no servidor.' },                
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts               65           error: 'Não foi possível consultar as instâncias da Evolution API.',  
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts               76     // 2. Se já existe e está conectada, não criar outra                        
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts              104               'Não foi possível reconectar a instância existente.',             
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts              123     // 4. Se não existe, criar uma nova instância                               
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\connect\route.ts              148             'Não foi possível criar a conexão WhatsApp.',                       
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\status\route.ts                15         { error: 'Não autorizado' },                                            
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\status\route.ts                28         { error: 'Sua conta não está vinculada a uma organização.' },           
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\status\route.ts                38         { error: 'Evolution API não configurada no servidor.' },                
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\status\route.ts                61           error: 'Não foi possível consultar a Evolution API.',                 
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\evolution\webhook\route.ts              115       console.error('[Evolution Webhook] Perfil não encontrado:', profileError) 
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts              36         { error: 'Código ou state não informado pela Meta.' },                  
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts              91         { error: 'Instagram OAuth não está configurado no servidor.' },         
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts             121         { error: 'Não foi possível trocar o código do Instagram por um token....
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts             130         { error: 'Instagram não retornou um access token.' },                   
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts             157             'Não foi possível obter o token de longa duração do Instagram.',    
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts             187             'Não foi possível identificar a conta do Instagram conectada.',     
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\callback\route.ts             218         { error: 'Não foi possível salvar a conexão do Instagram.' },           
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\connect\route.ts               23         { error: 'Instagram OAuth não configurado no servidor.' },              
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\connect\route.ts               65       { error: 'Não foi possível iniciar a conexão com o Instagram.' },         
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\send\route.ts                  29         { error: 'Não autenticado.' },                                          
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\send\route.ts                  57         { error: 'Não foi possível carregar a configuração do Instagram.' },    
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\send\route.ts                  64         { error: 'Instagram não configurado.' },                                
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\send\route.ts                  71         { error: 'Instagram não está conectado.' },                             
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\webhook\route.ts              107          * Não registra tokens, segredos ou credenciais.                        
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\webhook\route.ts              131          * não são mensagens recebidas.                                         
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\api\instagram\webhook\route.ts              428          * Cria a conversa se ainda não existir.                                
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\privacy\page.tsx                             75               O WACRM não vende informações pessoais. Os dados podem ser        
+C:\Users\junio\Documents\PROJETO\wacrm\src\app\privacy\page.tsx                             88               proteger as informações contra acesso não autorizado, alteração,  
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\inbox\message-thread.tsx            1259                   value: "Não respondeu",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\inbox\message-thread.tsx            1260                   label: "Não respondeu",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\instagram-config.tsx        149                 Instagram não conectado                                         
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\instagram-config.tsx        203               A conexão será autorizada pelo próprio Instagram. O WACRM não     
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx          58         throw new Error(data.error || 'NÃ£o foi possÃ­vel consultar o WhatsAp...
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         105           data.error || 'NÃ£o foi possÃ­vel iniciar a conexÃ£o.'                
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         124           toast.success('ConexÃ£o iniciada. Aguarde alguns segundos.');         
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         177                   : 'WhatsApp nÃ£o conectado'}                                  
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         183                 ? 'Seu WhatsApp estÃ¡ conectado e pronto para receber e envia...
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         192                 ConexÃ£o WhatsApp                                               
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         196                 A conexÃ£o Ã© feita diretamente pela Evolution API.             
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         210                     Sua conexÃ£o estÃ¡ ativa.                                   
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         242                         cÃ³digo.                                                
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         255                         Aguardando conexÃ£o...                                  
+C:\Users\junio\Documents\PROJETO\wacrm\src\components\settings\whatsapp-config.tsx         277                         Clique no botÃ£o abaixo para gerar um QR Code e         
+C:\Users\junio\Documents\PROJETO\wacrm\src\lib\instagram\instagram-api.ts                   47     throw new Error('Instagram API não retornou o ID da mensagem.')             
+C:\Users\junio\Documents\PROJETO\wacrm\src\lib\whatsapp\evolution-api.ts                    14     throw new Error('Evolution API não configurada no servidor.')               
+C:\Users\junio\Documents\PROJETO\wacrm\src\lib\whatsapp\evolution-api.ts                    51     throw new Error('Evolution API não retornou o ID da mensagem.')             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                  14     "noAccount": "Não tem uma conta?",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                  21     "notifications": "Nãotifications",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                  65     "unlinkedBody": "Nãothing you change will be saved while this is unresolv...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 124       "description": "Minutos para responder à primeira mensagem não respondi...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 132       "title": "Ainda não há dados suficientes"                                 
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 137       "whatsappNotConnected": "O WhatsApp? n?o est? conectado. Acesse Configu...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 142       "filterUnread": "Não lidas",                                              
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 169       "noTeammates": "N?o h? atendentes dispon?veis",                           
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 188       "readOnlyPlaceholder": "Somente leitura ? os visualizadores podem consu...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 191       "readOnlyTitle": "Somente leitura ? seu perfil n?o pode enviar mensagens",
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 207       "quickRepliesEmpty": "Ainda n?o h? respostas r?pidas. Adicione algumas ...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 212       "quickReplySaveError": "N?o foi poss?vel salvar a resposta r?pida."       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 224       "unsupported": "[Tipo de mensagem n?o suportado]",                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 228       "downloadFailed": "N?o foi poss?vel baixar o anexo",                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 242       "downloadFailed": "N?o foi poss?vel baixar o anexo",                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 243       "failed": "Este anexo n?o est? mais dispon?vel",                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 299       "updateError": "N?o foi poss?vel atualizar o assistente de IA.",          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 300       "networkError": "N?o foi poss?vel conectar ao servidor."                  
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 314       "noTagsYet": "Não tags yet.",                                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 319         "name": "Nãome",                                                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 327       "noContactsMatch": "Não contacts match your filters.",                    
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 328       "noContactsYet": "Não contacts yet.",                                     
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 349       "addDesc": "Criar a new contact. Nãome is required.",                     
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 352       "nameLabel": "Nãome",                                                     
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 363       "noTagsFound": "Não tags found.",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 377       "noTagsAvailable": "Não tags available. Criar tags in Configurações.",    
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 388         "noTags": "Não tags",                                                   
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 389         "noDeals": "Não deals",                                                 
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 400       "name": "Nãome",                                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 406       "noCustomFields": "Não custom fields defined. Criar them in Configuraçõ...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 411         "noActivity": "Não activity yet."                                       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 416         "save": "Adicionar Nãote",                                              
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 417         "noNotes": "Não notes yet."                                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 420         "noDeals": "Não deals yet"                                              
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 424         "noTagsAvailable": "Não tags available. Criar tags in Configurações."   
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 432       "toastNotAuthenticated": "Nãot authenticated",                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 434       "toastNoteAdded": "Nãote added",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 436       "toastNoteDeleted": "Nãote deleted",                                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 463         "name": "Nãome",                                                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 472       "toastNoValidRows": "Não valid rows found. Ensure CSV has a \"phone\" c...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 489       "fieldName": "Nãovo field name…",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 491       "empty": "Não custom fields yet.",                                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 507       "noPipelinesYet": "Não pipelines yet",                                    
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 513       "newPipeline": "Nãovo Funil",                                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 514       "pipelineName": "Funil Nãome",                                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 516       "defaultStagesDesc": "Default stages (Nãovo Lead → Won) will be created...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 531       "noContact": "Não contact",                                               
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 537       "newDeal": "Nãovo Negócio",                                               
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 565       "toastNotSignedIn": "Nãot signed in",                                     
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 584       "pipelineName": "Funil Nãome",                                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 586       "newStageNamePlaceholder": "Nãovo stage name",                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 621       "newBroadcast": "Nãovo Disparo",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 622       "noBroadcastsYet": "Não broadcasts yet",                                  
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 625         "name": "Nãome",                                                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 665       "noRecipients": "Não recipients found.",                                  
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 666       "noRecipientsFilter": "Não recipients match this filter.",                
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 697       "title": "Nãovo Disparo",                                                 
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 706       "toastNotSignedIn": "Nãot signed in.",                                    
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 718         "noTemplates": "Não templates available.",                              
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 738         "noTagsFound": "Não tags found.",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 779           "name": "Nãome",                                                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 787         "broadcastName": "Disparo Nãome",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 814       "emptyTitle": "Não automations yet",                                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 846       "emptyTitle": "Não executions yet",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 851       "noSteps": "Não steps recorded.",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 878           "label": "Nãovo Mensagem Recebido",                                   
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 894           "label": "Nãovo Contato Criado",                                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 936         "name": "Nãome",                                                        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                 968         "no": "Não"                                                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1014         "closeConversationHint": "Sets the conversation status to \"closed\"....
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1033       "emptyTitle": "Não flows yet",                                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1060       "emptyState": "Não runs yet. Trigger the flow from a personal WhatsApp ...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1068       "noEvents": "Não events recorded for this run.",                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1086       "nodesTitle": "Nãodes ({count})",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1093       "nodeKeyLabel": "Nãode key (internal identifier — keep stable for analy...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1096       "noNodesYet": "Não nodes yet.",                                           
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1100       "noNodeSelected": "Não node selected",                                    
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1111         "endNodeHelp": "Terminal node. When the runner reaches this node the ...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1210       "noIssues": "Não issues. Liday to activate.",                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1244       "notSetup": "Nãot set up yet",                                            
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1276       "noPendingTitle": "Não pending invitations.",                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1317       "whatsappMessage": "Join {accountNãome} on wacrm using this link (valid...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1329       "notAuthenticated": "Nãot authenticated",                                 
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1335       "noTags": "Não tags yet — create your first one below.",                  
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1336       "placeholder": "e.g. Nãovosletter",                                       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1360       "newTemplate": "Nãovo Template",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1361       "noTemplates": "Não templates yet.",                                      
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1374       "dialogNewTitle": "Nãovo Mensagem Template",                              
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1378       "templateName": "Template Nãome",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1380       "nameFixed": "Nãome is fixed once a template exists on Meta — create a ...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1467       "notConnected": "Nãot Conectado",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1471       "notRegistered": "Nãot registered — Meta will not deliver events",        
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1502       "mirrorInboundOffWarning": "Nãovo attachments will stop being copied an...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1580       "newPassword": "Nãovo password",                                          
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1586       "passwordMismatch": "Nãovo password and confirmation do not match",       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1616       "newApiKey": "Nãovo API key",                                             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1617       "noApiKeys": "Não API keys yet.",                                         
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1618       "createOneHint": "Click <bold>Nãovo API key</bold> to create one.",       
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1622       "noScopes": "Não scopes",                                                 
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1633       "nameLabel": "Nãome",                                                     
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1646       "newKeyTitle": "Nãovo API key",                                           
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1649       "networkError": "Não foi possível conectar ao servidor"                   
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1676       "testNetworkError": "Não foi possível conectar ao provedor.",             
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1682       "behaviourDesc": "Informe ao assistente sobre sua empresa — produtos, t...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1692       "handoffToDesc": "Quando o bot não puder ajudar — ou atingir o limite d...
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1693       "handoffQueue": "Fila não atribuída (qualquer atendente pode assumir)",   
+C:\Users\junio\Documents\PROJETO\wacrm\messages\pt-BR.json                                1718       "noDocs": "Não documents yet.",                                           
+
+

@@ -57,7 +57,7 @@ function getLastMessagePreview(text: string | null | undefined) {
   if (/^\\[audioMessage\\]$/i.test(value)) return "?? ?udio";
   if (/^\\[documentMessage\\]$/i.test(value)) return "?? Documento";
   if (/^\\[interactiveMessage\\]$/i.test(value)) return "? Mensagem interativa";
-  if (/^\\[templateMessage\\]$/i.test(value)) return "? Template";
+  if (/^\\[templateMessage\\]$/i.test(value)) return "? Modelo";
   if (/^\\[placeholderMessage\\]$/i.test(value)) return "Mensagem";
 
   return text;

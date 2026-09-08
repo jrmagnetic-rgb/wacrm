@@ -2,12 +2,12 @@
 
 /**
  * Editor toolbar — flow name / description, status chip, dirty
- * indicator, and the action buttons (Save, Activate/Pause, Delete,
+ * indicator, and the action buttons (Salvar, Activate/Pause, Delete,
  * View runs, Back).
  *
  * Restyled to the Flow Builder design handoff: a single compact
  * toolbar row (back · icon · inline-editable name · status chip ·
- * edited dot on the left; Runs · Delete · Activate · Save on the
+ * edited dot on the left; Runs · Delete · Activate · Salvar on the
  * right) followed by a subtle, full-width description "note" line.
  * Replaces the old three-row stack so the editor reads as one app
  * chrome bar above the canvas/list stage.
@@ -85,7 +85,7 @@ export function EditorHeader() {
         {dirty && (
           <span
             className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-wide text-amber-300"
-            title="Unsaved changes — hit Save to persist"
+            title="Unsaved changes — hit Salvar to persist"
             aria-live="polite"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
@@ -155,7 +155,7 @@ export function EditorHeader() {
             ) : (
               <Save className="h-3.5 w-3.5" />
             )}
-            Save
+            Salvar
           </Button>
         </div>
       </div>
@@ -184,7 +184,7 @@ function StatusChip({ status }: { status: BuilderState["status"] }) {
     },
     active: {
       cls: "border-emerald-600/40 bg-emerald-500/10 text-emerald-300",
-      label: "Active",
+      label: "Ativo",
     },
     archived: {
       cls: "border-border bg-muted/50 text-muted-foreground",

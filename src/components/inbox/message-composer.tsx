@@ -270,7 +270,7 @@ export function MessageComposer({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         if (data.code === "ai_not_configured") {
-          toast.error("AI isn't set up yet — enable it in Settings → AI Assistant.");
+          toast.error("A IA ainda não está configurada — ative-a em Configurações → Assistente de IA.");
         } else {
           toast.error(data.error ?? "Couldn't draft a reply.");
         }

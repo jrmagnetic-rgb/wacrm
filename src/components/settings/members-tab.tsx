@@ -210,7 +210,7 @@ export function MembersTab() {
           ),
         );
         const payload = await res.json().catch(() => ({}));
-        toast.error(payload.error || 'Failed to update role');
+        toast.error(payload.error || 'Não foi possível atualizar a função');
         return;
       }
       toast.success(t('updatedToast', { name: member.full_name || t('unnamed'), role: tRoles(nextRole) }));
@@ -238,7 +238,7 @@ export function MembersTab() {
       );
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
-        toast.error(payload.error || 'Failed to remove member');
+        toast.error(payload.error || 'Não foi possível remover o membro');
         return;
       }
       toast.success(t('removedToast', { name: removingMember.full_name || t('unnamed') }));
@@ -261,7 +261,7 @@ export function MembersTab() {
       });
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
-        toast.error(payload.error || 'Failed to revoke invitation');
+        toast.error(payload.error || 'Não foi possível revogar o convite');
         return;
       }
       toast.success(t('revokedToast'));
@@ -357,7 +357,7 @@ export function MembersTab() {
                             {member.avatar_url ? (
                               <AvatarImage
                                 src={member.avatar_url}
-                                alt={member.full_name || 'Member'}
+                                alt={member.full_name || 'Membro'}
                               />
                             ) : null}
                             <AvatarFallback className="bg-primary/10 text-sm font-medium text-primary">

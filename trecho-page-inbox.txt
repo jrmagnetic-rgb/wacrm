@@ -1,0 +1,74 @@
+﻿```tsx
+          );
+        }
+        return [fetched, ...prev];
+      });
+    } finally {
+      hydratingConvIdsRef.current.delete(convId);
+    }
+  }, []);
+
+  // Check WhatsApp connection status on mount
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const response = await fetch("/api/evolution/status", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setWhatsappConnected(false);
+          return;
+        }
+
+        setWhatsappConnected(data?.connected === true);
+      } catch {
+        setWhatsappConnected(false);
+      }
+    };
+
+    checkConnection();
+  }, []);
+
+  // Handle realtime message events
+  const handleMessageEvent = useCallback(
+    (event: { eventType: string; new: Message; old: Partial<Message> }) => {
+      const newMsg = event.new;
+
+      console.log("🔎 REALTIME MESSAGE:", {
+        id: newMsg.id,
+        conversation_id: newMsg.conversation_id,
+        sender_type: newMsg.sender_type,
+        content_text: newMsg.content_text,
+      });
+
+      if (event.eventType === "INSERT") {
+        // Add to messages if it belongs to active conversation
+        if (
+          activeConversation &&
+          newMsg.conversation_id === activeConversation.id
+        ) {
+          setMessages((prev) => {
+            // Avoid duplicates
+            if (prev.some((m) => m.id === newMsg.id)) return prev;
+            // Replace optimistic message if it exists
+            const withoutOptimistic = prev.filter(
+              (m) => !m.id.startsWith("temp-")
+            );
+            return [...withoutOptimistic, newMsg];
+          });
+        }
+
+        // Update conversation list preview. We need to know *synchronously*
+        // whether the conv is already in state to decide between patching
+        // the preview and triggering a hydrate â€” see the comment on
+        // knownConvIdsRef for why a closure flag inside the updater would
+        // always read false here.
+        if (knownConvIdsRef.current.has(newMsg.conversation_id)) {
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.id === newMsg.conversation_id
+                ? {
+```
